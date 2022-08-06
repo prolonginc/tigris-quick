@@ -28,6 +28,7 @@ class UpdateQuantityCommand extends Command
      */
     public function handle()
     {
+        Auth::logInUsingId(13);
         $delay = 0;
         for ($i=1; $i < 4000; $i++) {
             ParseQuickbooksQueue::dispatch($i)->delay(now()->addMinutes($delay));
