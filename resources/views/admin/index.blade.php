@@ -63,7 +63,7 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                @foreach($pendingUsers as $user)
+                @foreach($approvedUsers as $user)
                     <tr>
                         <td class="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-6">
                             {{$user->name}}
