@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\QuickbooksController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +33,8 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
 
 });
 
+
+Route::get('/test', [QuickbooksController::class,'index'])->middleware(['auth'])->name('dashboard');
 
 
 require __DIR__.'/auth.php';
