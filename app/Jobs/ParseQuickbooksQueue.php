@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ParseQuickbooksQueue implements ShouldQueue
 {
@@ -37,7 +38,7 @@ class ParseQuickbooksQueue implements ShouldQueue
 
         $quickbooks = app('Spinen\QuickBooks\Client');
         $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
-        if($item && $item->QtyOnHand != null) {
+        if($item && $item->QtyOnHand != null && ! Str::contains($item->name, 'deleted')) {
         Product::updateOrCreate(
             ['id' =>$this->id],
             [
