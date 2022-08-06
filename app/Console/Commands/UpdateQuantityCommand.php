@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ParseQuickbooksQueue;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateQuantityCommand extends Command
 {
