@@ -22,7 +22,7 @@ class QuickbooksController extends Controller
         for ($i=1; $i < 9; $i++) {
             $item = $quickbooks->getDataService()->FindbyId('item', $i);
             if($item) {
-            $items[] = $item->Name;
+            $items[] = $item;
             }
         }
       dd($items);
