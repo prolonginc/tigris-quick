@@ -11,7 +11,7 @@ class QuickbooksController extends Controller
     {
         $delay = 0;
         for ($i=1; $i < 4000; $i++) {
-            ParseQuickbooksQueue::onQueue('default')->dispatch($i)->delay(now()->addMinutes($delay));
+            ParseQuickbooksQueue::dispatch($i)->delay(now()->addMinutes($delay));
             if($i %50 == 0) {
                 $delay++;
             }
