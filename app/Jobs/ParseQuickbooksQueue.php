@@ -33,17 +33,18 @@ class ParseQuickbooksQueue implements ShouldQueue
     public function handle()
     {
         $quickbooks = app('Spinen\QuickBooks\Client');
-        $product = $quickbooks->getDataService()->FindbyId('item', $this->id)->Name;
+        $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
+        if($item) {
         Product::updateOrCreate(
             ['id' =>$this->id],
             [
-                'name' => $product->Name,
-                'description' => $product->Description,
-                'quantity' => $product->QtyOnHand,
-                'price' => $product->UnitPrice,
+                'name' => $item->Name,
+                'description' => $item->Description,
+                'quantity' => $item->QtyOnHand,
+                'price' => $item->UnitPrice,
             ]
         );
-
+        }
 
 
 
