@@ -9,5 +9,11 @@ use Laravel\Scout\Searchable;
 class Product extends Model
 {
     use HasFactory, Searchable;
-
+    protected  $fillable = [
+        'id',
+        'name',
+        'description',
+        'price',
+        'quantity',
+    ];
 }
