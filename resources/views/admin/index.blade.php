@@ -72,7 +72,7 @@
                         <td class="hidden px-3 py-4 text-sm text-gray-500 sm:table-cell"> {{$user->phone}}</td>
                         <td class="px-3 py-4 text-sm text-gray-500"> {{$user->email}}</td>
                         <td class="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                            <a href="{{route('admin.destroy', $user->id)}}" class="text-indigo-600 hover:text-indigo-900">Approve<span class="sr-only">, Lindsay Walton</span></a>
+                            <a href="{{route('admin.destroy', $user->id)}}" class="text-indigo-600 hover:text-indigo-900">Delete Usser<span class="sr-only"></span></a>
                         </td>
                     </tr>
                 @endforeach
