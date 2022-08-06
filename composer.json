@@ -13,11 +13,13 @@
         "php": "^8.0.2",
         "doctrine/dbal": "^3.3",
         "guzzlehttp/guzzle": "^7.2",
+        "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^9.19",
         "laravel/horizon": "^5.9",
         "laravel/sanctum": "^2.14.1",
         "laravel/scout": "^9.4",
         "laravel/tinker": "^2.7",
+        "meilisearch/meilisearch-php": "^0.24.0",
         "spinen/laravel-quickbooks-client": "dev-develop"
     },
     "require-dev": {

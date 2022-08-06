@@ -14,7 +14,7 @@ class DashboardController extends Controller
         if(! Auth::user()->is_approved) {
             return redirect(RouteServiceProvider::PENDING);
         }
-        $products = Product::search($request->product)->paginate(20);
+        $products = Product::search($request->product)->get();
         return view('dashboard')->with(compact('products'));
     }
 }
