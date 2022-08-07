@@ -39,7 +39,7 @@ class ParseQuickbooksQueue implements ShouldQueue
         $quickbooks = app('Spinen\QuickBooks\Client');
         $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
         if($item && $item->QtyOnHand != null) {
-            if(Str::contains($item->name, 'deleted')) {
+            if(Str::contains($item->Name, 'deleted')) {
                 $product = Product::find($this->id);
                 if($product) {
                     $product->delete();
