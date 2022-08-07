@@ -9,9 +9,9 @@
             <div class="lg:flex-auto">
                 <h1 class="text-xl font-semibold text-gray-900">Products</h1>
             </div>
-            <div>
+            <div class="flex-auto">
                 <form action="/dashboard">
-                <div class="mt-4">
+                <div class="mt-4 ">
                     <input type="text" name="product" id="name" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 px-4 rounded-full" placeholder="Search By Product">
                 </div>
                 </form>
