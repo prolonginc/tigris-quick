@@ -57,7 +57,7 @@ class ParseQuickbooksQueue implements ShouldQueue
 
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::warning("ParseQuickbooksQueue failed for item {$this->id}: {$e->getMessage()}");
         }
 
