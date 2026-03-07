@@ -56,7 +56,7 @@ class UpdateQuantityCommand extends Command
                             ['id' => $item->Id],
                             [
                                 'name' => $item->Name,
-                                'description' => $item->Description,
+                                'description' => $item->Description ?? '',
                                 'quantity' => $item->QtyOnHand ?? 0,
                                 'price' => $item->UnitPrice,
                             ]
