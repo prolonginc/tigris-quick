@@ -35,26 +35,30 @@ class ParseQuickbooksQueue implements ShouldQueue
     {
         Auth::loginUsingId(1);
 
-        $quickbooks = app('Spinen\QuickBooks\Client');
-        $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
-        if($item && $item->QtyOnHand != null) {
-            if(Str::contains($item->Name, 'deleted')) {
-                $product = Product::find($this->id);
-                if($product) {
-                    $product->delete();
-                }
-            } else {
-                Product::updateOrCreate(
-                    ['id' =>$this->id],
-                    [
-                        'name' => $item->Name,
-                        'description' => $item->Description,
-                        'quantity' => $item->QtyOnHand,
-                        'price' => $item->UnitPrice,
-                    ]
-                );
+        try {
+            $quickbooks = app('Spinen\QuickBooks\Client');
+            $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
+            if($item && $item->QtyOnHand != null) {
+                if(Str::contains($item->Name, 'deleted')) {
+                    $product = Product::find($this->id);
+                    if($product) {
+                        $product->delete();
+                    }
+                } else {
+                    Product::updateOrCreate(
+                        ['id' =>$this->id],
+                        [
+                            'name' => $item->Name,
+                            'description' => $item->Description,
+                            'quantity' => $item->QtyOnHand,
+                            'price' => $item->UnitPrice,
+                        ]
+                    );
 
+                }
             }
+        } catch (\Exception $e) {
+            \Log::warning("ParseQuickbooksQueue failed for item {$this->id}: {$e->getMessage()}");
         }
 
 
