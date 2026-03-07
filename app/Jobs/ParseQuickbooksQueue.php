@@ -33,7 +33,7 @@ class ParseQuickbooksQueue implements ShouldQueue
      */
     public function handle()
     {
-        Auth::logInUsingId(13);
+        Auth::loginUsingId(1);
 
         $quickbooks = app('Spinen\QuickBooks\Client');
         $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
