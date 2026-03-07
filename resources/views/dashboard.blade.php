@@ -82,6 +82,9 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="mt-4 mb-4 px-4">
+                        {{ $products->links() }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -136,6 +139,7 @@
         <div class="mb-4">
             <label class="block text-sm font-medium">Pickup Time (Hourly)</label>
             <select class="mt-1 block w-full border rounded-md p-2"  id="pickup-time">
+                <option>Pickup Now</option>
                 <option>8:00 AM</option>
                 <option>9:00 AM</option>
                 <option>10:00 AM</option>
