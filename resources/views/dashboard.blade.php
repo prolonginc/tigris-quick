@@ -67,7 +67,7 @@
                                                 <input type="hidden" name="description" value="{{ $product->description }}">
                                                 <input type="hidden" name="price" value="{{ $product->price }}">
                                                 <button type="submit"
-                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
                                                     Add to Cart
                                                 </button>
                                             </form>
