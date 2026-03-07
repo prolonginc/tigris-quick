@@ -36,7 +36,7 @@ class ParseQuickbooksQueue implements ShouldQueue
         Auth::loginUsingId(1);
 
         try {
-            $quickbooks = app('Spinen\QuickBooks\Client');
+            $quickbooks = app(\App\QuickBooks\Client::class);
             $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
             if($item && $item->QtyOnHand != null) {
                 if(Str::contains($item->Name, 'deleted')) {

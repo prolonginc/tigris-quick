@@ -4,11 +4,6 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
-    "repositories": [{
-        "type": "vcs",
-        "url": "https://github.com/shawnreid/laravel-quickbooks-client",
-        "no-api": true
-    }],
     "require": {
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.8",
@@ -19,7 +14,7 @@
         "laravel/scout": "^10.0",
         "laravel/tinker": "^2.10",
         "meilisearch/meilisearch-php": "^1.0",
-        "spinen/laravel-quickbooks-client": "dev-develop",
+        "quickbooks/v3-php-sdk": "^6.0",
         "symfony/dom-crawler": "^7.0"
     },
     "require-dev": {

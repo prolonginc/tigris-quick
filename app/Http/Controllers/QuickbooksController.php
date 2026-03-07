@@ -17,7 +17,7 @@ class QuickbooksController extends Controller
             }
         }
 
-        $quickbooks = app('Spinen\QuickBooks\Client');
+        $quickbooks = app(\App\QuickBooks\Client::class);
         $items = [];
         for ($i=1; $i < 9; $i++) {
             $item = $quickbooks->getDataService()->FindbyId('item', $i);
