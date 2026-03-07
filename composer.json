@@ -10,27 +10,27 @@
         "no-api": true
     }],
     "require": {
-        "php": "^8.0.2",
-        "doctrine/dbal": "^3.3",
-        "guzzlehttp/guzzle": "^7.2",
-        "http-interop/http-factory-guzzle": "^1.2",
-        "laravel/framework": "^9.19",
-        "laravel/horizon": "^5.9",
-        "laravel/sanctum": "^2.14.1",
-        "laravel/scout": "^9.4",
-        "laravel/tinker": "^2.7",
-        "meilisearch/meilisearch-php": "^0.24.0",
-        "spinen/laravel-quickbooks-client": "dev-develop"
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/boost": "^2.2",
+        "laravel/framework": "^12.0",
+        "laravel/horizon": "^6.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/scout": "^10.0",
+        "laravel/tinker": "^2.10",
+        "meilisearch/meilisearch-php": "^1.0",
+        "spinen/laravel-quickbooks-client": "dev-develop",
+        "symfony/dom-crawler": "^7.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
-        "laravel/breeze": "^1.11",
+        "fakerphp/faker": "^1.23",
+        "laravel/breeze": "^2.0",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^6.1",
-        "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "laravel/sail": "^1.0",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^11.0",
+        "spatie/laravel-ignition": "^2.9"
     },
     "autoload": {
         "psr-4": {
@@ -67,7 +67,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

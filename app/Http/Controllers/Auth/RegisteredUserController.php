@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\UserRegisteredNotification;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +61,6 @@ class RegisteredUserController extends Controller
 
 //        Auth::login($user);
 
-        return redirect(RouteServiceProvider::PENDING);
+        return redirect('/pending');
     }
 }
