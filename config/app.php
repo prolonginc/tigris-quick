@@ -24,6 +24,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'order_notification_email' => env('ORDER_NOTIFICATION_EMAIL', 'order@tigrisautoglass.com'),
+
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
     ],

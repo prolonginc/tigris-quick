@@ -50,10 +50,7 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::post('/cart/update-cart', [CartController::class, 'updateCartBeforeCheckout']);
-    Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOder');
-
-    Route::get('/checkout/generate-order-id', [CheckoutController::class, 'getOrderId'])
-    ->name('checkout.getOrderId');
+    Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 
 
 });

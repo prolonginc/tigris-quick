@@ -145,7 +145,7 @@
         <!-- Order Summary -->
         <div class="mb-4">
             <h3 class="font-semibold">Order Summary</h3>
-            <p id="order-number" class="text-gray-600">FD28884 GTY x1</p>
+            <p id="order-number" class="text-gray-600"></p>
         </div>
 
         <!-- Place Order -->
@@ -206,6 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const checkoutModal = document.getElementById("checkout-modal");
     const closeCheckout = document.getElementById("close-checkout");
     const placeOrderBtn = document.querySelector('#checkout-modal button.bg-green-600');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     let count = 0;
 
     // -------------------------------
@@ -229,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 method: 'GET',
                 headers: {
                     "Accept": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    "X-CSRF-TOKEN": csrfToken
                 }
             });
 
@@ -264,7 +265,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
                         <button class="text-red-600 hover:text-red-800 delete-item">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
@@ -283,6 +284,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateCartHeader() {
         cartCount.textContent = count;
         cartTitle.textContent = `Your Cart (${count} item${count !== 1 ? 's' : ''})`;
+    }
+
+    // -------------------------------
+    //  GET CART ITEMS FROM SIDEBAR
+    // -------------------------------
+    function getCartItemsFromSidebar() {
+        return Array.from(cartItemsContainer.querySelectorAll('[data-product-id]')).map(el => ({
+            product_id: el.getAttribute('data-product-id'),
+            quantity: parseInt(el.querySelector('.item-qty').textContent)
+        }));
+    }
+
+    // -------------------------------
+    //  UPDATE CART ON SERVER
+    // -------------------------------
+    async function updateCartOnServer(items) {
+        await fetch('/cart/update-cart', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            body: JSON.stringify({ items })
+        });
+    }
+
+    // -------------------------------
+    //  PLACE ORDER ON SERVER
+    // -------------------------------
+    async function placeOrder(items, pickupInfo, pickupTime) {
+        const response = await fetch('/checkout/place-order', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            body: JSON.stringify({
+                items,
+                pickup_info: pickupInfo,
+                pickup_time: pickupTime
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.message || 'Failed to place order');
+        }
+
+        return await response.json();
     }
 
     // -------------------------------
@@ -391,21 +443,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                      .reduce((sum, el) => sum + parseInt(el.textContent), 0);
         updateCartHeader();
 
-        // Optional backend update
         try {
-            await fetch('/cart/update-cart', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ 
-                    items: Array.from(cartItemsContainer.querySelectorAll('[data-product-id]')).map(el => ({
-                        product_id: el.getAttribute('data-product-id'),
-                        quantity: parseInt(el.querySelector('.item-qty').textContent)
-                    }))
-                })
-            });
+            await updateCartOnServer(getCartItemsFromSidebar());
         } catch (error) {
             console.error('Failed to update cart:', error);
         }
@@ -415,40 +454,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     //  CHECKOUT + PLACE ORDER
     // -------------------------------
     checkoutBtn.addEventListener("click", async () => {
-        try {
-            const items = Array.from(document.querySelectorAll('#cart-sidebar [data-product-id]')).map(el => ({
-                product_id: el.getAttribute("data-product-id"),
-                quantity: parseInt(el.querySelector(".item-qty").textContent)
-            }));
+        const items = getCartItemsFromSidebar();
+        if (items.length === 0) return alert("Your cart is empty.");
 
-            await updateCartBeforeCheckout(items);
+        try {
+            await updateCartOnServer(items);
+
+            // Build order summary for modal
+            const summaryParts = Array.from(cartItemsContainer.querySelectorAll('[data-product-id]')).map(el => {
+                const name = el.querySelector('h3').textContent;
+                const qty = el.querySelector('.item-qty').textContent;
+                return `${name} x${qty}`;
+            });
+            document.getElementById('order-number').textContent = summaryParts.join(', ');
+
             checkoutModal.classList.remove("hidden");
             checkoutModal.classList.add("flex");
         } catch (err) {
             console.error(err);
-            alert("Failed to generate Order ID. Try again.");
+            alert("Failed to prepare checkout. Try again.");
         }
     });
 
     placeOrderBtn.addEventListener("click", async () => {
         try {
-            const items = Array.from(document.querySelectorAll('#cart-sidebar [data-product-id]')).map(el => ({
-                product_id: el.getAttribute("data-product-id"),
-                quantity: parseInt(el.querySelector(".item-qty").textContent)
-            }));
-
+            const items = getCartItemsFromSidebar();
             if (items.length === 0) return alert("Your cart is empty.");
 
             const pickupInfo = document.getElementById('pickup-info').value;
             const pickupTime = document.getElementById('pickup-time').value;
-            const orderNumber = document.getElementById('order-number').textContent;
 
-            const result = await placeOrder(items, pickupInfo, pickupTime, orderNumber);
+            placeOrderBtn.disabled = true;
+            placeOrderBtn.textContent = 'Placing Order...';
+
+            const result = await placeOrder(items, pickupInfo, pickupTime);
+
             if (result.success) {
-                document.getElementById('success-order-number').textContent = `Order #${orderNumber}`;
-                document.getElementById('success-pickup-info').textContent = `Pickup at ${pickupInfo} at ${pickupTime}.`;
+                document.getElementById('success-order-number').textContent = `Order #${result.order_number}`;
+                document.getElementById('success-pickup-info').textContent = `Pickup at ${result.pickup_info} at ${result.pickup_time}.`;
                 document.getElementById('order-success-modal').classList.remove('hidden');
                 checkoutModal.classList.add('hidden');
+                checkoutModal.classList.remove('flex');
 
                 document.getElementById('continue-shopping-btn').addEventListener('click', () => {
                     document.getElementById('order-success-modal').classList.add('hidden');
@@ -460,6 +506,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (err) {
             console.error(err);
             alert("Failed to place order. Try again.");
+        } finally {
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.textContent = 'Place Order';
         }
     });
 
