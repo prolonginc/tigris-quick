@@ -37,7 +37,9 @@ Route::get('/test',function(MygrantScraperService $service) {
 
 
 
-Route::get('/dashboard', [DashboardController::class,'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/parts', [DashboardController::class,'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/admin/parts', [DashboardController::class,'adminIndex'])->middleware(['auth'])->name('admin.parts');
+Route::get('/api/products/search', [DashboardController::class,'searchApi'])->middleware(['auth'])->name('products.search');
 
 Route::get('/purchase-history', function () {
     return view('purchase-history');

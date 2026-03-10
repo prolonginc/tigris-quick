@@ -43,13 +43,6 @@ class AdminController extends Controller
 
     protected function isAdmin()
     {
-        $email =  Auth::user()->email;
-        return (in_array($email,
-        [
-            'udsn27@gmail.com',
-            'sari.yono@lnxinc.com',
-            'sabrisaadoon@gmail.com'
-        ]
-        ));
+        return Auth::user()->isAdmin();
     }
 }

@@ -10,12 +10,45 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        if(! Auth::user()->is_approved) {
+        if (! Auth::user()->is_approved) {
             return redirect('/pending');
         }
+
+        return view('dashboard');
+    }
+
+    public function adminIndex(Request $request)
+    {
+        if (! Auth::user()->isAdmin()) {
+            abort(403);
+        }
+
         $products = $request->product
             ? Product::search($request->product)->paginate(25)->appends(['product' => $request->product])
             : Product::paginate(25);
-        return view('dashboard')->with(compact('products'));
+
+        return view('admin.parts')->with(compact('products'));
+    }
+
+    public function searchApi(Request $request)
+    {
+        $query = $request->input('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::search($query)->take(10)->get();
+
+        return response()->json($products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'quantity' => $product->quantity,
+                'in_stock' => $product->quantity > 0,
+            ];
+        }));
     }
 }

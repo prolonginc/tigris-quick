@@ -48,4 +48,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->email, [
+            'udsn27@gmail.com',
+            'sari.yono@lnxinc.com',
+            'sabrisaadoon@gmail.com',
+        ]);
+    }
 }
