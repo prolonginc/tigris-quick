@@ -67,10 +67,7 @@
                                                 <input type="hidden" name="description" value="{{ $product->description }}">
                                                 <input type="hidden" name="price" value="{{ $product->price }}">
                                                 <button type="submit"
-                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white"
-                                                    style="background-color: #24C3EE;"
-                                                    onmouseover="this.style.backgroundColor='#1aa8d0'"
-                                                    onmouseout="this.style.backgroundColor='#24C3EE'">
+                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
                                                     Add to Cart
                                                 </button>
                                             </form>
@@ -371,13 +368,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.querySelectorAll('.add-to-cart-form').forEach(form => {
-        form.addEventListener('submit', async function (e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
-            const btn = this.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
-            btn.style.cursor = 'not-allowed';
-
             const productId = this.querySelector('[name="product_id"]').value;
             const name = this.querySelector('[name="name"]').value;
             const description = this.querySelector('[name="description"]').value;
@@ -396,22 +388,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.innerHTML = `
                     <div class="flex items-center justify-between">
                         <h3 class="font-medium text-gray-900">${name}</h3>
-                        <button class="text-red-600 hover:text-red-800 delete-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-1">${description}</p>
-                    <div class="flex items-center justify-between mt-1">
-                        <p class="text-sm text-gray-900 font-bold item-price">$${price}</p>
                         <div class="flex items-center space-x-2">
                             <button class="decrease-btn text-gray-600 hover:text-gray-800">-</button>
                             <span class="item-qty">1</span>
                             <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
+                            <button class="text-red-600 hover:text-red-800 delete-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
+                    <p class="text-sm text-gray-500 mt-1">${description}</p>
+                    <p class="text-sm text-gray-900 font-bold item-price mt-1">$${price}</p>
                 `;
                 cartItemsContainer.appendChild(item);
             }
@@ -419,10 +409,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             count++;
             updateCartHeader();
             openSidebar();
-            await sendCartRequest(this);
-            btn.disabled = false;
-            btn.style.opacity = '';
-            btn.style.cursor = '';
+            setTimeout(closeSidebar, 1000);
+            sendCartRequest(this);
         });
     });
 
