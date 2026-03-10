@@ -39,6 +39,14 @@ Route::get('/test',function(MygrantScraperService $service) {
 
 Route::get('/dashboard', [DashboardController::class,'index'])->middleware(['auth'])->name('dashboard');
 
+Route::get('/purchase-history', function () {
+    return view('purchase-history');
+})->middleware(['auth'])->name('purchase-history');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->middleware(['auth'])->name('contact');
+
 Route::middleware(['auth'])->controller(AdminController::class)->group(function () {
     Route::get('/admin/', 'index')->name('admin.index');
     Route::get('/admin/users/{user}/approve', 'approve')->name('admin.approve');
