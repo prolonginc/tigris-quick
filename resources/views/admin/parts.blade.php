@@ -8,63 +8,72 @@
             <div class="lg:flex-auto">
                 <h1 class="text-xl font-semibold text-gray-900">Products</h1>
             </div>
+            <div class="flex-auto">
+                <form action="{{ route('admin.parts') }}">
+                    <div class="mt-4">
+                        <input type="text" name="product" id="name" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 px-4 rounded-full" placeholder="Search By Product">
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div x-data="productSearch()" class="mt-6 max-w-2xl mx-auto">
-            <div class="relative">
-                <input
-                    type="text"
-                    x-model="query"
-                    @input.debounce.300ms="search()"
-                    @focus="if (results.length > 0) showResults = true"
-                    @click.away="showResults = false"
-                    @keydown.escape="showResults = false"
-                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 px-4 py-3 rounded-full text-lg"
-                    placeholder="Search for a part..."
-                    autocomplete="off"
-                >
-                <div x-show="loading" class="absolute right-4 top-1/2 transform -translate-y-1/2">
-                    <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                    </svg>
+        <div class="mt-8 flex flex-col">
+            <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-300">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Product Number</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Available</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                @foreach($products as $product)
+                                <tr>
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                                        <div class="font-medium text-gray-900">{{ $product->name }}</div>
+                                        <div class="text-gray-500 text-xs">{{ $product->description }}</div>
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$product->price}}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        @if($product->quantity)
+                                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">In Stock</span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">Out of Stock</span>
+                                        @endif
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        @if($product->quantity > 0)
+                                            <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form">
+                                                @csrf
+                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                                                <input type="hidden" name="name" value="{{ $product->name }}">
+                                                <input type="hidden" name="description" value="{{ $product->description }}">
+                                                <input type="hidden" name="price" value="{{ $product->price }}">
+                                                <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                                                    Add to Cart
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-200 text-gray-600">
+                                                Unavailable
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 mb-4 px-4">
+                        {{ $products->links() }}
+                    </div>
                 </div>
-            </div>
-
-            <div x-show="showResults" x-transition class="mt-2 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-                <template x-if="results.length === 0 && query.length >= 2 && !loading">
-                    <div class="px-4 py-3 text-sm text-gray-500">No products found.</div>
-                </template>
-                <ul class="divide-y divide-gray-100">
-                    <template x-for="product in results" :key="product.id">
-                        <li class="px-4 py-3 hover:bg-gray-50">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <div class="font-medium text-gray-900" x-text="product.name"></div>
-                                    <div class="text-gray-500 text-xs" x-text="product.description"></div>
-                                    <div class="text-sm text-gray-700 mt-1">
-                                        $<span x-text="parseFloat(product.price).toFixed(2)"></span>
-                                        <span x-show="product.in_stock" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock</span>
-                                        <span x-show="!product.in_stock" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">Out of Stock</span>
-                                    </div>
-                                </div>
-                                <div x-show="product.in_stock">
-                                    <button
-                                        @click="addToCart(product)"
-                                        class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white"
-                                        style="background-color: #24C3EE;"
-                                        @mouseover="$el.style.backgroundColor='#1aa8d0'"
-                                        @mouseout="$el.style.backgroundColor='#24C3EE'">
-                                        Add to Cart
-                                    </button>
-                                </div>
-                                <div x-show="!product.in_stock">
-                                    <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-200 text-gray-600">Unavailable</span>
-                                </div>
-                            </div>
-                        </li>
-                    </template>
-                </ul>
             </div>
         </div>
     </div>
@@ -146,63 +155,7 @@
     </div>
 </div>
 
-<script>
-function productSearch() {
-    return {
-        query: '',
-        results: [],
-        showResults: false,
-        loading: false,
-
-        async search() {
-            if (this.query.length < 2) {
-                this.results = [];
-                this.showResults = false;
-                return;
-            }
-            this.loading = true;
-            try {
-                const response = await fetch(`/api/products/search?q=${encodeURIComponent(this.query)}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-                this.results = await response.json();
-                this.showResults = true;
-            } catch (error) {
-                console.error('Search failed:', error);
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async addToCart(product) {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const formData = new FormData();
-            formData.append('product_id', product.id);
-            formData.append('quantity', 1);
-
-            try {
-                const response = await fetch('{{ route("cart.store") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
-
-                if (response.ok) {
-                    document.dispatchEvent(new CustomEvent('cart-updated', { detail: product }));
-                }
-            } catch (error) {
-                console.error('Add to cart failed:', error);
-            }
-        }
-    };
-}
-
+ <script>
 document.addEventListener('DOMContentLoaded', async () => {
     const openButton = document.getElementById('open-cart-button');
     const closeButton = document.getElementById('close-cart-button');
@@ -320,45 +273,73 @@ document.addEventListener('DOMContentLoaded', async () => {
         return await response.json();
     }
 
-    // Handle cart-updated event from Alpine autocomplete
-    document.addEventListener('cart-updated', (e) => {
-        const product = e.detail;
-        const productId = product.id;
-
-        let existingItem = cartItemsContainer.querySelector(`[data-product-id="${productId}"]`);
-        if (existingItem) {
-            const qtySpan = existingItem.querySelector('.item-qty');
-            const qty = parseInt(qtySpan.textContent) + 1;
-            qtySpan.textContent = qty;
-            existingItem.querySelector('.item-price').textContent = `$${(parseFloat(product.price) * qty).toFixed(2)}`;
-        } else {
-            const item = document.createElement('div');
-            item.classList.add('border-b', 'pb-3');
-            item.setAttribute("data-product-id", productId);
-            item.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <h3 class="font-medium text-gray-900">${product.name}</h3>
-                    <div class="flex items-center space-x-2">
-                        <button class="decrease-btn text-gray-600 hover:text-gray-800">-</button>
-                        <span class="item-qty">1</span>
-                        <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
-                        <button class="text-red-600 hover:text-red-800 delete-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-500 mt-1">${product.description || ''}</p>
-                <p class="text-sm text-gray-900 font-bold item-price mt-1">$${parseFloat(product.price).toFixed(2)}</p>
-            `;
-            cartItemsContainer.appendChild(item);
+    async function sendCartRequest(form) {
+        const formData = new FormData(form);
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                headers: {
+                    "X-CSRF-TOKEN": form.querySelector('input[name="_token"]').value,
+                    "Accept": "application/json",
+                },
+                body: formData
+            });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Server Response:", data);
+            } else {
+                console.error("Error adding to cart:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Request failed:", error);
         }
-        count++;
-        updateCartHeader();
-        openSidebar();
-        setTimeout(closeSidebar, 1000);
+    }
+
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const productId = this.querySelector('[name="product_id"]').value;
+            const name = this.querySelector('[name="name"]').value;
+            const description = this.querySelector('[name="description"]').value;
+            const price = parseFloat(this.querySelector('[name="price"]').value);
+
+            let existingItem = cartItemsContainer.querySelector(`[data-product-id="${productId}"]`);
+            if (existingItem) {
+                const qtySpan = existingItem.querySelector('.item-qty');
+                const qty = parseInt(qtySpan.textContent) + 1;
+                qtySpan.textContent = qty;
+                existingItem.querySelector('.item-price').textContent = `$${(price * qty).toFixed(2)}`;
+            } else {
+                const item = document.createElement('div');
+                item.classList.add('border-b', 'pb-3');
+                item.setAttribute("data-product-id", productId);
+                item.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-medium text-gray-900">${name}</h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="decrease-btn text-gray-600 hover:text-gray-800">-</button>
+                            <span class="item-qty">1</span>
+                            <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
+                            <button class="text-red-600 hover:text-red-800 delete-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">${description}</p>
+                    <p class="text-sm text-gray-900 font-bold item-price mt-1">$${price}</p>
+                `;
+                cartItemsContainer.appendChild(item);
+            }
+
+            count++;
+            updateCartHeader();
+            openSidebar();
+            setTimeout(closeSidebar, 1000);
+            sendCartRequest(this);
+        });
     });
 
     cartItemsContainer.addEventListener('click', async (e) => {

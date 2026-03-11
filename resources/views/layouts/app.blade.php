@@ -25,6 +25,11 @@
                         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Parts </a>
                         <a href="{{ route('purchase-history') }}" class="{{ request()->routeIs('purchase-history') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Purchase History </a>
                         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Contact </a>
+                        @auth
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.parts') }}" class="{{ request()->routeIs('admin.parts') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Admin </a>
+                            @endif
+                        @endauth
                     </div>
                     <div class="hidden sm:flex sm:items-center">
                                 <button id="open-cart-button" class="relative">
@@ -68,6 +73,11 @@
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Parts </a>
                     <a href="{{ route('purchase-history') }}" class="{{ request()->routeIs('purchase-history') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Purchase History </a>
                     <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Contact </a>
+                    @auth
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('admin.parts') }}" class="{{ request()->routeIs('admin.parts') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Admin </a>
+                        @endif
+                    @endauth
                 </div>
                 <div class="pt-4 pb-3 border-t border-gray-200">
                     <div class="flex items-center px-4">
