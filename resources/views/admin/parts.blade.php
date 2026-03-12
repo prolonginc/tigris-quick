@@ -55,7 +55,10 @@
                                                 <input type="hidden" name="description" value="{{ $product->description }}">
                                                 <input type="hidden" name="price" value="{{ $product->price }}">
                                                 <button type="submit"
-                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                                                    class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white"
+                                                    style="background-color: #24C3EE;"
+                                                    onmouseover="this.style.backgroundColor='#1aa8d0'"
+                                                    onmouseout="this.style.backgroundColor='#24C3EE'">
                                                     Add to Cart
                                                 </button>
                                             </form>
@@ -97,7 +100,7 @@
             </div>
 
             <div class="pb-6">
-                <button id="checkout-button" class="w-full py-3 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Checkout</button>
+                <button id="checkout-button" class="w-full py-3 text-lg font-semibold text-white rounded-md" style="background-color: #24C3EE;" onmouseover="this.style.backgroundColor='#1aa8d0'" onmouseout="this.style.backgroundColor='#24C3EE'">Checkout</button>
             </div>
         </div>
     </div>
@@ -118,16 +121,13 @@
             <label class="block text-sm font-medium">Pickup Time (Hourly)</label>
             <select class="mt-1 block w-full border rounded-md p-2"  id="pickup-time">
                 <option>Pickup Now</option>
-                <option>8:00 AM</option>
-                <option>9:00 AM</option>
-                <option>10:00 AM</option>
             </select>
         </div>
         <div class="mb-4">
             <h3 class="font-semibold">Order Summary</h3>
             <p id="order-number" class="text-gray-600"></p>
         </div>
-        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+        <button id="place-order-button" class="w-full text-white py-2 rounded-lg" style="background-color: #24C3EE;" onmouseover="this.style.backgroundColor='#1aa8d0'" onmouseout="this.style.backgroundColor='#24C3EE'">
             Place Order
         </button>
     </div>
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const checkoutBtn = document.getElementById("checkout-button");
     const checkoutModal = document.getElementById("checkout-modal");
     const closeCheckout = document.getElementById("close-checkout");
-    const placeOrderBtn = document.querySelector('#checkout-modal button.bg-green-600');
+    const placeOrderBtn = document.getElementById('place-order-button');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     let count = 0;
 
@@ -207,20 +207,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.innerHTML = `
                 <div class="flex items-center justify-between">
                     <h3 class="font-medium text-gray-900">${item.product.name}</h3>
-                    <div class="flex items-center space-x-2">
-                        <button class="decrease-btn text-gray-600 hover:text-gray-800">-</button>
-                        <span class="item-qty">${item.quantity}</span>
-                        <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
-                        <button class="text-red-600 hover:text-red-800 delete-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>
+                    <button class="text-red-500 hover:text-red-700 delete-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">${item.product.description}</p>
-                <p class="text-sm text-gray-900 font-bold item-price mt-1">$${(item.product.price * item.quantity).toFixed(2)}</p>
+                <div class="flex items-center justify-between mt-2">
+                    <p class="text-sm text-gray-900 font-bold item-price">$${(item.product.price * item.quantity).toFixed(2)}</p>
+                    <div class="inline-flex items-center border border-gray-300 rounded-full">
+                        <button class="decrease-btn w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-l-full text-lg font-medium">-</button>
+                        <span class="item-qty w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-900">${item.quantity}</span>
+                        <button class="increase-btn w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-r-full text-lg font-medium">+</button>
+                    </div>
+                </div>
             `;
             cartItemsContainer.appendChild(el);
         });
@@ -231,6 +233,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateCartHeader() {
         cartCount.textContent = count;
         cartTitle.textContent = `Your Cart (${count} item${count !== 1 ? 's' : ''})`;
+        if (count === 0) {
+            cartCount.classList.remove('bg-red-600', 'text-red-100');
+            cartCount.classList.add('bg-gray-400', 'text-gray-100');
+        } else {
+            cartCount.classList.remove('bg-gray-400', 'text-gray-100');
+            cartCount.classList.add('bg-red-600', 'text-red-100');
+        }
     }
 
     function getCartItemsFromSidebar() {
@@ -316,20 +325,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 item.innerHTML = `
                     <div class="flex items-center justify-between">
                         <h3 class="font-medium text-gray-900">${name}</h3>
-                        <div class="flex items-center space-x-2">
-                            <button class="decrease-btn text-gray-600 hover:text-gray-800">-</button>
-                            <span class="item-qty">1</span>
-                            <button class="increase-btn text-gray-600 hover:text-gray-800">+</button>
-                            <button class="text-red-600 hover:text-red-800 delete-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
                     </div>
                     <p class="text-sm text-gray-500 mt-1">${description}</p>
-                    <p class="text-sm text-gray-900 font-bold item-price mt-1">$${price}</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <p class="text-sm text-gray-900 font-bold item-price">$${price}</p>
+                        <div class="inline-flex items-center border border-gray-300 rounded-full">
+                            <button class="decrease-btn w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-l-full text-lg font-medium">-</button>
+                            <span class="item-qty w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-900">1</span>
+                            <button class="increase-btn w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-r-full text-lg font-medium">+</button>
+                        </div>
+                    </div>
                 `;
                 cartItemsContainer.appendChild(item);
             }
