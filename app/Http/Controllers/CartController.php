@@ -49,13 +49,21 @@ class CartController extends Controller
     public function updateCartBeforeCheckout(Request $request)
     {
         $validated = $request->validate([
-            'items' => 'required|array',
+            'items' => 'present|array',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
         $userId = Auth::id();
         DB::transaction(function () use ($validated, $userId) {
+            $productIds = collect($validated['items'])->pluck('product_id')->toArray();
+
+            // Remove items no longer in the cart
+            DB::table('carts')
+                ->where('user_id', $userId)
+                ->whereNotIn('product_id', $productIds)
+                ->delete();
+
             foreach ($validated['items'] as $item) {
                 DB::table('carts')
                     ->updateOrInsert(

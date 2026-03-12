@@ -88,7 +88,7 @@
             </div>
 
             <div class="pb-6">
-                <button id="checkout-button" class="w-full py-3 text-lg font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Checkout</button>
+                <button id="checkout-button" class="w-full py-3 text-lg font-semibold text-white rounded-md" style="background-color: #24C3EE;" onmouseover="this.style.backgroundColor='#1aa8d0'" onmouseout="this.style.backgroundColor='#24C3EE'">Checkout</button>
             </div>
         </div>
     </div>
@@ -118,7 +118,7 @@
             <h3 class="font-semibold">Order Summary</h3>
             <p id="order-number" class="text-gray-600"></p>
         </div>
-        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+        <button id="place-order-button" class="w-full text-white py-2 rounded-lg" style="background-color: #24C3EE;" onmouseover="this.style.backgroundColor='#1aa8d0'" onmouseout="this.style.backgroundColor='#24C3EE'">
             Place Order
         </button>
     </div>
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const checkoutBtn = document.getElementById("checkout-button");
     const checkoutModal = document.getElementById("checkout-modal");
     const closeCheckout = document.getElementById("close-checkout");
-    const placeOrderBtn = document.querySelector('#checkout-modal button.bg-green-600');
+    const placeOrderBtn = document.getElementById('place-order-button');
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     let count = 0;
 
@@ -280,6 +280,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateCartHeader() {
         cartCount.textContent = count;
         cartTitle.textContent = `Your Cart (${count} item${count !== 1 ? 's' : ''})`;
+        if (count === 0) {
+            cartCount.classList.remove('bg-red-600', 'text-red-100');
+            cartCount.classList.add('bg-gray-400', 'text-gray-100');
+        } else {
+            cartCount.classList.remove('bg-gray-400', 'text-gray-100');
+            cartCount.classList.add('bg-red-600', 'text-red-100');
+        }
     }
 
     function getCartItemsFromSidebar() {
