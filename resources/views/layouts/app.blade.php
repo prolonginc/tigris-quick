@@ -113,5 +113,34 @@
 {{--                {{ $slot }}--}}
 {{--            </main>--}}
 {{--        </div>--}}
+    @auth
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const cartCount = document.querySelector('#open-cart-button span');
+        if (!cartCount) return;
+        try {
+            const response = await fetch('/cart', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data.success) {
+                const count = data.items.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = count;
+                if (count === 0) {
+                    cartCount.classList.remove('bg-red-600', 'text-red-100');
+                    cartCount.classList.add('bg-gray-400', 'text-gray-100');
+                } else {
+                    cartCount.classList.remove('bg-gray-400', 'text-gray-100');
+                    cartCount.classList.add('bg-red-600', 'text-red-100');
+                }
+            }
+        } catch (e) {}
+    });
+    </script>
+    @endauth
     </body>
 </html>
