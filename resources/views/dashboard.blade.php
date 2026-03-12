@@ -369,7 +369,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         count++;
         updateCartHeader();
         openSidebar();
-        setTimeout(closeSidebar, 1000);
     });
 
     cartItemsContainer.addEventListener('click', async (e) => {
