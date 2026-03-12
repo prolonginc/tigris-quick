@@ -337,7 +337,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             count++;
             updateCartHeader();
             openSidebar();
-            setTimeout(closeSidebar, 1000);
             sendCartRequest(this);
         });
     });
