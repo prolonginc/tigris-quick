@@ -41,6 +41,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <div class="font-medium text-gray-900" x-text="product.name"></div>
+                                    <div x-show="product.sku" class="text-blue-600 text-xs font-semibold" x-text="'SKU: ' + product.sku"></div>
                                     <div class="text-gray-500 text-xs" x-text="product.description"></div>
                                     <div class="text-sm text-gray-700 mt-1">
                                         $<span x-text="parseFloat(product.price).toFixed(2)"></span>
