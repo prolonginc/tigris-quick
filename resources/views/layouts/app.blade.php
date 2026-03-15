@@ -15,82 +15,75 @@
     </head>
     <body class="font-sans antialiased">
     <div class="min-h-full">
-        <nav class="bg-white border-b border-gray-200">
+        <nav x-data="{ mobileMenuOpen: false }" class="bg-white border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex-shrink-0 flex items-center">
-                        <img class="hidden lg:block h-8 w-auto" src="{{asset('/images/logo.svg')}}" alt="Tigris">
+                        <img class="h-8 w-auto" src="{{asset('/images/logo.svg')}}" alt="Tigris">
                     </div>
                     <div class="hidden sm:flex sm:space-x-8">
                         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Parts </a>
                         <a href="{{ route('purchase-history') }}" class="{{ request()->routeIs('purchase-history') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Purchase History </a>
                         <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700' }} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"> Contact </a>
                     </div>
-                    <div class="hidden sm:flex sm:items-center sm:space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <!-- Cart icon - always visible -->
                         <button id="open-cart-button" class="relative">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.183 1.77.707 1.77H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">2</span>
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-100 transform translate-x-1/2 -translate-y-1/2 bg-gray-400 rounded-full">0</span>
                         </button>
 
-                        <x-dropdown align="right" width="48">
-                            <x-slot name="trigger">
-                                <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
-                                    <svg class="h-8 w-8 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-                                </button>
-                            </x-slot>
+                        <!-- Profile dropdown - desktop only -->
+                        <div class="hidden sm:block">
+                            <x-dropdown align="right" width="48">
+                                <x-slot name="trigger">
+                                    <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none transition duration-150 ease-in-out">
+                                        <svg class="h-8 w-8 text-gray-400 hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        </svg>
+                                    </button>
+                                </x-slot>
 
-                            <x-slot name="content">
-                                <div class="px-4 py-2 text-sm text-gray-900 font-medium border-b border-gray-100">
-                                    {{ Auth::user()->name }}
-                                </div>
+                                <x-slot name="content">
+                                    <div class="px-4 py-2 text-sm text-gray-900 font-medium border-b border-gray-100">
+                                        {{ Auth::user()->name }}
+                                    </div>
 
-                                <x-dropdown-link :href="route('account.edit')">
-                                    {{ __('Account') }}
-                                </x-dropdown-link>
-
-                                @if(auth()->user()->isAdmin())
-                                    <x-dropdown-link :href="route('admin.parts')">
-                                        {{ __('Admin') }}
+                                    <x-dropdown-link :href="route('account.edit')">
+                                        {{ __('Account') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link :href="route('admin.index')">
-                                        {{ __('Users') }}
-                                    </x-dropdown-link>
-                                @endif
 
-                                <div class="border-t border-gray-100"></div>
+                                    @if(auth()->user()->isAdmin())
+                                        <x-dropdown-link :href="route('admin.parts')">
+                                            {{ __('Admin') }}
+                                        </x-dropdown-link>
+                                        <x-dropdown-link :href="route('admin.index')">
+                                            {{ __('Users') }}
+                                        </x-dropdown-link>
+                                    @endif
 
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <x-dropdown-link :href="route('logout')"
-                                        onclick="event.preventDefault(); this.closest('form').submit();">
-                                        {{ __('Sign Out') }}
-                                    </x-dropdown-link>
-                                </form>
-                            </x-slot>
-                        </x-dropdown>
-                    </div>
-                    <div class="-mr-2 flex items-center sm:hidden">
+                                    <div class="border-t border-gray-100"></div>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <x-dropdown-link :href="route('logout')"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            {{ __('Sign Out') }}
+                                        </x-dropdown-link>
+                                    </form>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+
                         <!-- Mobile menu button -->
-                        <button type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" aria-controls="mobile-menu" :aria-expanded="mobileMenuOpen">
                             <span class="sr-only">Open main menu</span>
-                            <!--
-                              Heroicon name: outline/menu
-
-                              Menu open: "hidden", Menu closed: "block"
-                            -->
-                            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                            <svg x-show="!mobileMenuOpen" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
-                            <!--
-                              Heroicon name: outline/x
-
-                              Menu open: "block", Menu closed: "hidden"
-                            -->
-                            <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                            <svg x-show="mobileMenuOpen" x-cloak class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -99,7 +92,7 @@
             </div>
 
             <!-- Mobile menu, show/hide based on menu state. -->
-            <div class="sm:hidden" id="mobile-menu">
+            <div x-show="mobileMenuOpen" x-cloak class="sm:hidden" id="mobile-menu">
                 <div class="pt-2 pb-3 space-y-1">
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Parts </a>
                     <a href="{{ route('purchase-history') }}" class="{{ request()->routeIs('purchase-history') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800' }} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"> Purchase History </a>
@@ -171,5 +164,34 @@
 {{--                {{ $slot }}--}}
 {{--            </main>--}}
 {{--        </div>--}}
+    @auth
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const cartCount = document.querySelector('#open-cart-button span');
+        if (!cartCount) return;
+        try {
+            const response = await fetch('/cart', {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data.success) {
+                const count = data.items.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = count;
+                if (count === 0) {
+                    cartCount.classList.remove('bg-red-600', 'text-red-100');
+                    cartCount.classList.add('bg-gray-400', 'text-gray-100');
+                } else {
+                    cartCount.classList.remove('bg-gray-400', 'text-gray-100');
+                    cartCount.classList.add('bg-red-600', 'text-red-100');
+                }
+            }
+        } catch (e) {}
+    });
+    </script>
+    @endauth
     </body>
 </html>
