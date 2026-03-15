@@ -14,7 +14,11 @@ class DashboardController extends Controller
             return redirect('/pending');
         }
 
-        return view('dashboard');
+        $products = $request->product
+            ? Product::search($request->product)->paginate(24)->appends(['product' => $request->product])
+            : Product::paginate(24);
+
+        return view('dashboard', compact('products'));
     }
 
     public function adminIndex(Request $request)

@@ -4,14 +4,18 @@
     </x-slot>
 
     <div class="px-4 sm:px-6 lg:px-8">
-        <div class="sm:flex sm:items-center">
-            <div class="lg:flex-auto">
-                <h1 class="text-xl font-semibold text-gray-900">Products</h1>
-            </div>
+        <div class="text-center mt-4 mb-2">
+            <h1 class="text-2xl font-bold text-gray-900">Auto Glass Parts</h1>
+            <p class="mt-1 text-sm text-gray-500">Browse our inventory of windshields, back glass, door glass, and more</p>
         </div>
 
-        <div x-data="productSearch()" class="mt-6 max-w-2xl mx-auto">
+        <div x-data="productSearch()" class="mt-6 max-w-2xl mx-auto relative z-10">
             <div class="relative">
+                <div class="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
                 <input
                     type="text"
                     x-model="query"
@@ -19,8 +23,8 @@
                     @focus="if (results.length > 0) showResults = true"
                     @click.away="showResults = false"
                     @keydown.escape="showResults = false"
-                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 px-4 py-3 rounded-full text-lg"
-                    placeholder="Search for a part..."
+                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 pl-11 pr-4 py-3 rounded-full text-lg"
+                    placeholder="Search by part number, vehicle, or glass type..."
                     autocomplete="off"
                 >
                 <div x-show="loading" class="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -31,7 +35,7 @@
                 </div>
             </div>
 
-            <div x-show="showResults" x-transition class="mt-2 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
+            <div x-show="showResults" x-transition class="absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden z-20">
                 <template x-if="results.length === 0 && query.length >= 2 && !loading">
                     <div class="px-4 py-3 text-sm text-gray-500">No products found.</div>
                 </template>
@@ -67,6 +71,81 @@
                     </template>
                 </ul>
             </div>
+
+            <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400">
+                <span>Try:</span>
+                <button @click="query = 'windshield'; search()" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">windshield</button>
+                <button @click="query = 'back glass'; search()" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">back glass</button>
+                <button @click="query = 'door glass'; search()" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">door glass</button>
+                <button @click="query = 'Toyota'; search()" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">Toyota</button>
+                <button @click="query = 'Honda'; search()" class="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">Honda</button>
+            </div>
+        </div>
+
+        <!-- Product Card Grid -->
+        <div class="mt-8 max-w-7xl mx-auto">
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-sm text-gray-500">{{ $products->total() }} {{ Str::plural('product', $products->total()) }} available</p>
+            </div>
+
+            @if($products->count() > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                @foreach($products as $product)
+                <div class="bg-white rounded-lg shadow ring-1 ring-black ring-opacity-5 overflow-hidden hover:shadow-md transition-shadow duration-200 flex flex-col">
+                    <div class="p-4 flex-1">
+                        <div class="flex items-start justify-between">
+                            <h3 class="text-sm font-semibold text-gray-900 leading-tight">{{ $product->name }}</h3>
+                            @if($product->quantity > 0)
+                                <span class="ml-2 flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock</span>
+                            @else
+                                <span class="ml-2 flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">Out of Stock</span>
+                            @endif
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500 line-clamp-2">{{ $product->description }}</p>
+                        <p class="mt-3 text-lg font-bold text-gray-900">${{ number_format($product->price, 2) }}</p>
+                    </div>
+                    <div class="px-4 pb-4">
+                        @if($product->quantity > 0)
+                            <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                                <input type="hidden" name="name" value="{{ $product->name }}">
+                                <input type="hidden" name="description" value="{{ $product->description }}">
+                                <input type="hidden" name="price" value="{{ $product->price }}">
+                                <button type="submit"
+                                    class="w-full inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-white transition-colors"
+                                    style="background-color: #24C3EE;"
+                                    onmouseover="this.style.backgroundColor='#1aa8d0'"
+                                    onmouseout="this.style.backgroundColor='#24C3EE'">
+                                    <svg class="h-4 w-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </form>
+                        @else
+                            <button disabled class="w-full inline-flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-400 cursor-not-allowed">
+                                Unavailable
+                            </button>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <div class="mt-6 mb-8">
+                {{ $products->links() }}
+            </div>
+            @else
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No products available</h3>
+                <p class="mt-1 text-sm text-gray-500">Check back soon for new parts.</p>
+            </div>
+            @endif
         </div>
     </div>
 
@@ -327,7 +406,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         return await response.json();
     }
 
-    // Handle cart-updated event from Alpine autocomplete
+    // Handle Add to Cart forms from the product grid
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const productId = this.querySelector('[name="product_id"]').value;
+            const name = this.querySelector('[name="name"]').value;
+            const description = this.querySelector('[name="description"]').value;
+            const price = parseFloat(this.querySelector('[name="price"]').value);
+
+            const formData = new FormData(this);
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': this.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                if (response.ok) {
+                    document.dispatchEvent(new CustomEvent('cart-updated', {
+                        detail: { id: productId, name, description, price }
+                    }));
+                }
+            } catch (error) {
+                console.error('Add to cart failed:', error);
+            }
+        });
+    });
+
+    // Handle cart-updated event from Alpine autocomplete and grid forms
     document.addEventListener('cart-updated', (e) => {
         const product = e.detail;
         const productId = product.id;
