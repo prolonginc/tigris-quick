@@ -6,7 +6,7 @@
     <div class="px-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center">
             <div class="lg:flex-auto">
-                <h1 class="text-xl font-semibold text-gray-900">Products</h1>
+                <h1 class="text-xl font-semibold text-gray-900">Auto Glass Parts</h1>
             </div>
             <div class="flex-auto">
                 <form action="{{ route('admin.parts') }}">
@@ -25,6 +25,7 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Product Number</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">SKU</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Available</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
@@ -37,7 +38,8 @@
                                         <div class="font-medium text-gray-900">{{ $product->name }}</div>
                                         <div class="text-gray-500 text-xs">{{ $product->description }}</div>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$product->price}}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">{{ $product->sku ?? '—' }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${{ number_format($product->price, 2) }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                         @if($product->quantity)
                                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">In Stock</span>
@@ -337,7 +339,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             count++;
             updateCartHeader();
             openSidebar();
-            setTimeout(closeSidebar, 1000);
             sendCartRequest(this);
         });
     });

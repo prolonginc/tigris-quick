@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CartController;
@@ -71,5 +72,11 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
 
 // Route::get('/test', [QuickbooksController::class,'index'])->middleware(['auth'])->name('dashboard');
 
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account/email', [AccountController::class, 'updateEmail'])->name('account.update-email');
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.update-password');
+});
 
 require __DIR__.'/auth.php';
