@@ -31,17 +31,7 @@
                                     <span class="text-sm font-semibold text-gray-900">{{ $order->order_number }}</span>
                                     <span class="ml-3 text-sm text-gray-500">{{ $order->created_at->format('M d, Y \a\t g:i A') }}</span>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                                        @if($order->status === 'completed') bg-green-100 text-green-800
-                                        @elseif($order->status === 'pending') bg-yellow-100 text-yellow-800
-                                        @elseif($order->status === 'cancelled') bg-red-100 text-red-800
-                                        @else bg-gray-100 text-gray-800
-                                        @endif">
-                                        {{ ucfirst($order->status) }}
-                                    </span>
-                                    <span class="text-sm font-semibold text-gray-900">${{ number_format($order->total_price, 2) }}</span>
-                                </div>
+                                <span class="text-sm font-semibold text-gray-900">${{ number_format($order->total_price, 2) }}</span>
                             </div>
                             @if($order->pickup_info || $order->pickup_time)
                                 <div class="mt-2 text-sm text-gray-500">
