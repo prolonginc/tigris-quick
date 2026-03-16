@@ -43,7 +43,9 @@ Route::get('/admin/parts', [DashboardController::class,'adminIndex'])->middlewar
 Route::get('/api/products/search', [DashboardController::class,'searchApi'])->middleware(['auth'])->name('products.search');
 
 Route::get('/purchase-history', function () {
-    return view('purchase-history');
+    $user = auth()->user();
+    $orders = $user->orders()->with('items.product')->latest()->get();
+    return view('purchase-history', compact('orders', 'user'));
 })->middleware(['auth'])->name('purchase-history');
 
 Route::get('/contact', function () {
@@ -54,6 +56,7 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
     Route::get('/admin/', 'index')->name('admin.index');
     Route::get('/admin/users/{user}/approve', 'approve')->name('admin.approve');
     Route::get('/admin/users/{user}/destroy', 'destroy')->name('admin.destroy');
+    Route::get('/admin/users/{user}/purchases', 'userPurchaseHistory')->name('admin.user.purchases');
     // cart routes
     Route::get('/cart/products', [CartController::class, 'getCartProducts'])->name('cart.products');
 

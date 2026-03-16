@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
 use App\Notifications\UserApprovedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,16 @@ class AdminController extends Controller
     {
         $user->delete();
         return redirect(route('admin.index'));
+    }
 
+    public function userPurchaseHistory(User $user)
+    {
+        if (! $this->isAdmin()) {
+            abort(403);
+        }
+
+        $orders = $user->orders()->with('items.product')->latest()->get();
+        return view('purchase-history', compact('orders', 'user'));
     }
 
     protected function isAdmin()
