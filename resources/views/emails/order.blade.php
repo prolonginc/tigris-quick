@@ -117,7 +117,7 @@
             <!-- Customer Info -->
             <div class="box">
                 <p class="label">Customer</p>
-                <p style="margin-top: 0.25rem; font-weight: 500; color: #111827;">{{ $customer->name }} — {{ $customer->business_name ?? '' }}</p>
+                <p style="margin-top: 0.25rem; font-weight: 700; color: #111827; font-size: 1.125rem;">{{ $customer->name }} — {{ $customer->business_name ?? '' }}</p>
                 <p style="color: #4b5563; font-size: 0.875rem;">{{ $customer->phone_number ?? '' }} &bull; {{ $customer->email }}</p>
             </div>
 
