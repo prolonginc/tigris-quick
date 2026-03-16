@@ -131,7 +131,7 @@
                         <p class="item-header">
                             <span class="item-name">{{ $item->product->name }}</span>
                             <span class="item-sep">|</span>
-                            <span class="item-qty">Qty {{ $item->quantity }}</span>
+                            <span class="item-qty">({{ $item->quantity }})</span>
                         </p>
                         @if($item->product->sku)
                             <p class="item-sku"><span class="item-sku-label">SKU:</span> <span class="item-sku-value">{{ $item->product->sku }}</span></p>
