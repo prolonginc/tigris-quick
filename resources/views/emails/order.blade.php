@@ -64,22 +64,40 @@
         .item-row:first-child {
             border-top: none;
         }
+        .item-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
         .item-name {
             color: #111827;
-            font-weight: 500;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .item-sep {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        .item-qty {
+            color: #111827;
+            font-weight: 700;
+            font-size: 1rem;
         }
         .item-sku {
+            font-size: 0.875rem;
+            margin-top: 0.125rem;
+        }
+        .item-sku-label {
+            color: #374151;
+            font-weight: 600;
+        }
+        .item-sku-value {
             color: #1d4ed8;
             font-weight: 600;
-            font-size: 0.875rem;
         }
         .item-desc {
             color: #6b7280;
             font-size: 0.875rem;
-        }
-        .qty {
-            font-weight: 500;
-            color: #111827;
         }
     </style>
 </head>
@@ -110,13 +128,16 @@
                 @foreach($order->items as $item)
                 <div class="item-row">
                     <div>
-                        <p class="item-name">{{ $item->product->name }}</p>
+                        <p class="item-header">
+                            <span class="item-name">{{ $item->product->name }}</span>
+                            <span class="item-sep">|</span>
+                            <span class="item-qty">Qty {{ $item->quantity }}</span>
+                        </p>
                         @if($item->product->sku)
-                            <p class="item-sku">SKU: {{ $item->product->sku }}</p>
+                            <p class="item-sku"><span class="item-sku-label">SKU:</span> <span class="item-sku-value">{{ $item->product->sku }}</span></p>
                         @endif
                         <p class="item-desc">{{ $item->product->description }}</p>
                     </div>
-                    <div class="qty">Qty {{ $item->quantity }}</div>
                 </div>
                 @endforeach
             </div>
