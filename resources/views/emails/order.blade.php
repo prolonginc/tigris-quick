@@ -67,7 +67,7 @@
         .item-header {
             display: flex;
             align-items: baseline;
-            gap: 0.5rem;
+            gap: 1rem;
         }
         .item-name {
             color: #111827;
@@ -123,7 +123,7 @@
 
             <!-- Items -->
             <div class="box">
-                <p class="label">Items to Prepare</p>
+                <p class="label">Items to Prepare ({{ $order->items->sum('quantity') }})</p>
 
                 @foreach($order->items as $item)
                 <div class="item-row">
