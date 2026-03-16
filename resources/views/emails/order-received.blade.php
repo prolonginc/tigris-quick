@@ -130,9 +130,6 @@
                 <div class="item-row">
                     <div>
                         <p class="item-name">{{ $item->product->name }}</p>
-                        @if($item->product->sku)
-                            <p class="item-sku">SKU: {{ $item->product->sku }}</p>
-                        @endif
                         <p class="item-desc">{{ $item->product->description }}</p>
                     </div>
                     <div class="qty">Qty {{ $item->quantity }}</div>
