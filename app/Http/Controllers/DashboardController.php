@@ -44,7 +44,6 @@ class DashboardController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
-                'sku' => $product->sku,
                 'description' => $product->description,
                 'price' => $product->price,
                 'quantity' => $product->quantity,
