@@ -57,7 +57,14 @@
                                 @foreach($products as $product)
                                 <tr>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                                        <div class="font-medium text-gray-900">{{ $product->name }}</div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-medium text-gray-900">{{ $product->name }}</span>
+                                            @if($product->quantity)
+                                                <span class="sm:hidden inline-block w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+                                            @else
+                                                <span class="sm:hidden inline-block w-2 h-2 rounded-full bg-pink-500 flex-shrink-0"></span>
+                                            @endif
+                                        </div>
                                         <div class="text-gray-500 text-xs">{{ $product->description }}</div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">{{ $product->sku ?? '—' }}</td>
@@ -126,7 +133,10 @@ function adminSearch() {
                 tbody.innerHTML = products.map(p => `
                     <tr>
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
-                            <div class="font-medium text-gray-900">${this.escapeHtml(p.name)}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-medium text-gray-900">${this.escapeHtml(p.name)}</span>
+                                <span class="sm:hidden inline-block w-2 h-2 rounded-full flex-shrink-0 ${p.quantity > 0 ? 'bg-green-500' : 'bg-pink-500'}"></span>
+                            </div>
                             <div class="text-gray-500 text-xs">${this.escapeHtml(p.description || '')}</div>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">${this.escapeHtml(p.sku || '—')}</td>
