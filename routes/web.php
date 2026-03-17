@@ -52,6 +52,7 @@ Route::get('/contact', function () {
     return view('contact');
 })->middleware(['auth'])->name('contact');
 
+
 Route::middleware(['auth'])->controller(AdminController::class)->group(function () {
     Route::get('/admin/', 'index')->name('admin.index');
     Route::get('/admin/users/{user}/approve', 'approve')->name('admin.approve');
@@ -75,6 +76,7 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account/name', [AccountController::class, 'updateName'])->name('account.update-name');
     Route::put('/account/email', [AccountController::class, 'updateEmail'])->name('account.update-email');
     Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.update-password');
 });

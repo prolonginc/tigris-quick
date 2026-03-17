@@ -17,6 +17,20 @@ class AccountController extends Controller
         ]);
     }
 
+    public function updateName(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = Auth::user();
+        $user->name = $request->name;
+        $user->save();
+
+        return redirect()->route('account.edit')
+            ->with('status', 'Name updated successfully.');
+    }
+
     public function updateEmail(Request $request)
     {
         $user = Auth::user();
