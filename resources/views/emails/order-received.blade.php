@@ -60,30 +60,34 @@
             font-size: 0.875rem;
         }
         .item-row {
-            display: flex;
-            justify-content: space-between;
             border-top: 1px solid #e5e7eb;
             padding: 0.75rem 0;
         }
         .item-row:first-child {
             border-top: none;
         }
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
         .item-name {
             color: #111827;
             font-weight: 500;
         }
-        .item-sku {
-            color: #1d4ed8;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        .item-desc {
-            color: #6b7280;
-            font-size: 0.875rem;
+        .item-separator {
+            color: #d1d5db;
+            margin: 0 0.5rem;
+            font-weight: 300;
         }
         .qty {
             font-weight: 500;
             color: #111827;
+        }
+        .item-desc {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
         }
         .btn {
             display: inline-block;
@@ -128,11 +132,12 @@
 
                 @foreach($order->items as $item)
                 <div class="item-row">
-                    <div>
-                        <p class="item-name">{{ $item->product->name }}</p>
-                        <p class="item-desc">{{ $item->product->description }}</p>
+                    <div class="item-header">
+                        <span class="item-name">{{ $item->product->name }}</span>
+                        <span class="item-separator">|</span>
+                        <span class="qty">Qty {{ $item->quantity }}</span>
                     </div>
-                    <div class="qty">Qty {{ $item->quantity }}</div>
+                    <p class="item-desc">{{ $item->product->description }}</p>
                 </div>
                 @endforeach
             </div>
