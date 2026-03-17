@@ -38,6 +38,7 @@
                                     </svg>
                                     <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">2</span>
                                 </button>
+                                <a href="{{ route('settings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:text-indigo-600" role="menuitem"> Settings </a>
                                 <a href="/logout" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2"> Sign out </a>
                             </div>
 {{--                        </div>--}}
@@ -86,6 +87,7 @@
 
                     </div>
 
+                        <a href="{{ route('settings') }}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"> Settings </a>
                         <a href="/logout" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"> Sign out </a>
                 </div>
             </div>

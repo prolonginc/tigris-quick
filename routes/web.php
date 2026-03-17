@@ -49,6 +49,20 @@ Route::get('/contact', function () {
     return view('contact');
 })->middleware(['auth'])->name('contact');
 
+Route::get('/settings', function () {
+    return view('settings');
+})->middleware(['auth'])->name('settings');
+
+Route::put('/settings', function (\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+    ]);
+
+    $request->user()->update($validated);
+
+    return redirect()->route('settings')->with('success', 'Your name has been updated.');
+})->middleware(['auth'])->name('settings.update');
+
 Route::middleware(['auth'])->controller(AdminController::class)->group(function () {
     Route::get('/admin/', 'index')->name('admin.index');
     Route::get('/admin/users/{user}/approve', 'approve')->name('admin.approve');
