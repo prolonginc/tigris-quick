@@ -64,17 +64,40 @@
         .item-row:first-child {
             border-top: none;
         }
+        .item-header {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+        }
         .item-name {
             color: #111827;
-            font-weight: 500;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .item-sep {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        .item-qty {
+            color: #111827;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .item-sku {
+            font-size: 0.875rem;
+            margin-top: 0.125rem;
+        }
+        .item-sku-label {
+            color: #374151;
+            font-weight: 600;
+        }
+        .item-sku-value {
+            color: #1d4ed8;
+            font-weight: 600;
         }
         .item-desc {
             color: #6b7280;
             font-size: 0.875rem;
-        }
-        .qty {
-            font-weight: 500;
-            color: #111827;
         }
     </style>
 </head>
@@ -83,7 +106,7 @@
         <!-- Header -->
         <div class="header">
             <span>Tigris Auto Glass</span>
-            <span>TIG-2025-001234 • 10:00 AM</span>
+            <span>{{ $order->order_number }} &bull; {{ $order->pickup_time }}</span>
         </div>
 
         <!-- Body -->
@@ -94,29 +117,29 @@
             <!-- Customer Info -->
             <div class="box">
                 <p class="label">Customer</p>
-                <p class="mt-1 font-medium text-gray-900">Issa Al-Saadi — Tigris Auto Glass</p>
-                <p class="text-gray-600 text-sm">(916) 596-8593 • order@tigrisautoglass.com</p>
+                <p style="margin-top: 0.25rem; font-weight: 700; color: #111827; font-size: 1.125rem;">{{ $customer->name }} — {{ $customer->business_name ?? '' }}</p>
+                <p style="color: #4b5563; font-size: 0.875rem;">{{ $customer->phone_number ?? '' }} &bull; {{ $customer->email }}</p>
             </div>
 
             <!-- Items -->
             <div class="box">
-                <p class="label">Items to Prepare</p>
+                <p class="label">Items to Prepare ({{ $order->items->sum('quantity') }})</p>
 
+                @foreach($order->items as $item)
                 <div class="item-row">
                     <div>
-                        <p class="item-name">FD28884 GTY</p>
-                        <p class="item-desc">21 - Toyota RAV4 Laminated F/R</p>
+                        <p class="item-header">
+                            <span class="item-name">{{ $item->product->name }}</span>
+                            <span class="item-sep">|</span>
+                            <span class="item-qty">({{ $item->quantity }})</span>
+                        </p>
+                        @if($item->product->sku)
+                            <p class="item-sku"><span class="item-sku-label">SKU:</span> <span class="item-sku-value">{{ $item->product->sku }}</span></p>
+                        @endif
+                        <p class="item-desc">{{ $item->product->description }}</p>
                     </div>
-                    <div class="qty">Qty 2</div>
                 </div>
-
-                <div class="item-row">
-                    <div>
-                        <p class="item-name">FW05465</p>
-                        <p class="item-desc">18 - Honda Civic Windshield</p>
-                    </div>
-                    <div class="qty">Qty 1</div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>

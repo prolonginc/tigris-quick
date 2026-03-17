@@ -49,6 +49,7 @@ class ParseQuickbooksQueue implements ShouldQueue
                         ['id' =>$this->id],
                         [
                             'name' => $item->Name,
+                            'sku' => $item->Sku ?? null,
                             'description' => $item->Description,
                             'quantity' => $item->QtyOnHand,
                             'price' => $item->UnitPrice,

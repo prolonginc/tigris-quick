@@ -72,6 +72,11 @@
             color: #111827;
             font-weight: 500;
         }
+        .item-sku {
+            color: #1d4ed8;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
         .item-desc {
             color: #6b7280;
             font-size: 0.875rem;
@@ -102,44 +107,35 @@
         <!-- Header -->
         <div class="header">
             <span>Tigris Auto Glass</span>
-            <span>Order #: TIG-2025-001234</span>
+            <span>Order #: {{ $order->order_number }}</span>
         </div>
 
         <!-- Body -->
         <div class="section">
             <h1 class="title">Will-Call Order Received</h1>
-            <p class="subtitle">Hi Issa, thanks for placing your order with <strong>Tigris Auto Glass.</strong></p>
+            <p class="subtitle">Hi {{ $customer->name }}, thanks for placing your order with <strong>Tigris Auto Glass.</strong></p>
 
             <!-- Order Details -->
             <div class="box">
                 <p class="label">Order Details</p>
-                <p><strong>Pickup Location:</strong> 1054 El Camino Ave, Sacramento, CA 95815</p>
-                <p><strong>Pickup Time:</strong> 10:00 AM</p>
+                <p><strong>Pickup Location:</strong> {{ $order->pickup_info }}</p>
+                <p><strong>Pickup Time:</strong> {{ $order->pickup_time }}</p>
             </div>
 
             <!-- Items Ordered -->
             <div class="box">
                 <p class="label">Items Ordered</p>
 
+                @foreach($order->items as $item)
                 <div class="item-row">
                     <div>
-                        <p class="item-name">FD28884 GTY</p>
-                        <p class="item-desc">21 - Toyota RAV4 Laminated F/R</p>
+                        <p class="item-name">{{ $item->product->name }}</p>
+                        <p class="item-desc">{{ $item->product->description }}</p>
                     </div>
-                    <div class="qty">Qty 2</div>
+                    <div class="qty">Qty {{ $item->quantity }}</div>
                 </div>
-
-                <div class="item-row">
-                    <div>
-                        <p class="item-name">FW05465</p>
-                        <p class="item-desc">18 - Honda Civic Windshield</p>
-                    </div>
-                    <div class="qty">Qty 1</div>
-                </div>
+                @endforeach
             </div>
-
-            <!-- View Order Button -->
-            <a href="#" class="btn">View Order</a>
 
             <!-- Footer -->
             <p class="footer">Thank you for choosing Tigris Auto Glass.</p>
