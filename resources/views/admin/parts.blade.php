@@ -48,7 +48,6 @@
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Product Number</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">SKU</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Qty</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Available</th>
                                 </tr>
@@ -68,7 +67,6 @@
                                         <div class="text-gray-500 text-xs">{{ $product->description }}</div>
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">{{ $product->sku ?? '—' }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${{ number_format($product->price, 2) }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $product->quantity }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                         @if($product->quantity)
@@ -128,7 +126,7 @@ function adminSearch() {
         renderResults(products) {
             const tbody = document.getElementById('products-tbody');
             if (products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-sm text-gray-500">No products found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-sm text-gray-500">No products found.</td></tr>`;
             } else {
                 tbody.innerHTML = products.map(p => `
                     <tr>
@@ -140,7 +138,6 @@ function adminSearch() {
                             <div class="text-gray-500 text-xs">${this.escapeHtml(p.description || '')}</div>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">${this.escapeHtml(p.sku || '—')}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">$${parseFloat(p.price).toFixed(2)}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${p.quantity}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                             ${p.quantity > 0
