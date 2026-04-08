@@ -25,7 +25,7 @@ class AdminOrderPlaced extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('New Will-Call Order — Prepare for Pickup')
+            ->subject("{$this->order->user->business_name} {$this->order->order_number} • Pickup Now")
             ->view('emails.order', [
                 'order' => $this->order,
                 'customer' => $this->order->user,

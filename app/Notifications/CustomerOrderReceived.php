@@ -25,7 +25,7 @@ class CustomerOrderReceived extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Will-Call Order Received')
+            ->subject("Tigris Auto Glass {$this->order->order_number} • Pickup Now")
             ->view('emails.order-received', [
                 'order' => $this->order,
                 'customer' => $notifiable,
