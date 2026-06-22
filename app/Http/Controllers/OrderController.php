@@ -19,12 +19,14 @@ class OrderController extends Controller
      */
     public function history()
     {
+        $user = auth()->user();
+
         $orders = Order::with('items.product')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user->id)
             ->latest()
             ->get();
 
-        return view('purchase-history', ['orders' => $orders]);
+        return view('purchase-history', ['orders' => $orders, 'user' => $user]);
     }
 
     /**

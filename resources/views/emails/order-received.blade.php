@@ -29,9 +29,19 @@
             justify-content: space-between;
             align-items: center;
         }
-        .section { padding: 1.5rem; }
-        .title { font-size: 1.25rem; font-weight: 700; color: #111827; }
-        .subtitle { color: #374151; margin-top: 0.25rem; font-size: 0.95rem; }
+        .section {
+            padding: 1.5rem;
+        }
+        .title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        .subtitle {
+            color: #374151;
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
         .box {
             background-color: #f9fafb;
             border: 1px solid #e5e7eb;
@@ -39,50 +49,100 @@
             padding: 1rem;
             margin-top: 1rem;
         }
-        .label { font-weight: 600; color: #111827; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .label {
+            font-weight: 600;
+            color: #111827;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .text-gray {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
         .item-row {
-            display: flex;
-            justify-content: space-between;
             border-top: 1px solid #e5e7eb;
             padding: 0.75rem 0;
         }
-        .item-row:first-child { border-top: none; }
-        .item-name { color: #111827; font-weight: 500; }
-        .item-desc { color: #6b7280; font-size: 0.875rem; }
-        .qty { font-weight: 500; color: #111827; }
-        .footer { font-size: 0.875rem; color: #6b7280; margin-top: 1.5rem; }
+        .item-row:first-child {
+            border-top: none;
+        }
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .item-name {
+            color: #111827;
+            font-weight: 500;
+        }
+        .item-separator {
+            color: #d1d5db;
+            margin: 0 0.5rem;
+            font-weight: 300;
+        }
+        .qty {
+            font-weight: 500;
+            color: #111827;
+        }
+        .item-desc {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #1d4ed8;
+            color: #ffffff;
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            margin-top: 1rem;
+        }
+        .footer {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 1.5rem;
+        }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- Header -->
         <div class="header">
             <span>Tigris Auto Glass</span>
             <span>Order #: {{ $order->order_number }}</span>
         </div>
 
+        <!-- Body -->
         <div class="section">
             <h1 class="title">Will-Call Order Received</h1>
-            <p class="subtitle">Hi {{ $customer->name ?? 'there' }}, thanks for placing your order with <strong>Tigris Auto Glass.</strong></p>
+            <p class="subtitle">Hi {{ $customer->name }}, thanks for placing your order with <strong>Tigris Auto Glass.</strong></p>
 
+            <!-- Order Details -->
             <div class="box">
                 <p class="label">Order Details</p>
                 <p><strong>Pickup Location:</strong> {{ $order->pickup_info }}</p>
                 <p><strong>Pickup Time:</strong> {{ $order->pickup_time }}</p>
             </div>
 
+            <!-- Items Ordered -->
             <div class="box">
                 <p class="label">Items Ordered</p>
+
                 @foreach($order->items as $item)
-                    <div class="item-row">
-                        <div>
-                            <p class="item-name">{{ $item->product->name ?? 'Item' }}</p>
-                            <p class="item-desc">{{ $item->product->description ?? '' }}</p>
-                        </div>
-                        <div class="qty">Qty {{ $item->quantity }}</div>
+                <div class="item-row">
+                    <div class="item-header">
+                        <span class="item-name">{{ $item->product->name }}</span>
+                        <span class="item-separator">|</span>
+                        <span class="qty">Qty {{ $item->quantity }}</span>
                     </div>
+                    <p class="item-desc">{{ $item->product->description }}</p>
+                </div>
                 @endforeach
             </div>
 
+            <!-- Footer -->
             <p class="footer">Thank you for choosing Tigris Auto Glass.</p>
         </div>
     </div>

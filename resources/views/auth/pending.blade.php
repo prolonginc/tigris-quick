@@ -4,7 +4,7 @@
             <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
                 <div class="mx-auto w-full max-w-sm lg:w-96">
                     <div>
-                        <img class="h-12 w-auto" src="{{asset('/images/logo.svg')}}" alt="Workflow">
+                        <a href="/"><img class="h-12 w-auto" src="{{asset('/images/logo.svg')}}" alt="Workflow"></a>
                         <div class="h-40"></div>
                     </div>
                     <img class="h-12 w-auto" src="{{asset('/images/checkmark.svg')}}" alt="Workflow">

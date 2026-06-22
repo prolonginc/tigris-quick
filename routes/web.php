@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CartController;
@@ -54,10 +55,12 @@ Route::get('/contact', function () {
     return view('contact');
 })->middleware(['auth'])->name('contact');
 
+
 Route::middleware(['auth'])->controller(AdminController::class)->group(function () {
     Route::get('/admin/', 'index')->name('admin.index');
     Route::get('/admin/users/{user}/approve', 'approve')->name('admin.approve');
     Route::get('/admin/users/{user}/destroy', 'destroy')->name('admin.destroy');
+    Route::get('/admin/users/{user}/purchases', 'userPurchaseHistory')->name('admin.user.purchases');
     // cart routes
     Route::get('/cart/products', [CartController::class, 'getCartProducts'])->name('cart.products');
 
@@ -73,5 +76,12 @@ Route::middleware(['auth'])->controller(AdminController::class)->group(function 
 
 // Route::get('/test', [QuickbooksController::class,'index'])->middleware(['auth'])->name('dashboard');
 
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account/name', [AccountController::class, 'updateName'])->name('account.update-name');
+    Route::put('/account/email', [AccountController::class, 'updateEmail'])->name('account.update-email');
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.update-password');
+});
 
 require __DIR__.'/auth.php';
