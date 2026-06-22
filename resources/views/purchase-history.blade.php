@@ -53,9 +53,11 @@
                             <p class="text-sm font-semibold text-gray-900">{{ $order->order_number }}</p>
                             <p class="text-xs text-gray-500">{{ $order->created_at->format('M j, Y \a\t g:i A') }}</p>
                         </div>
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {{ $statusStyles[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                            {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
-                        </span>
+                        @if($order->status !== \App\Models\Order::STATUS_PENDING)
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {{ $statusStyles[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                            </span>
+                        @endif
                     </div>
                     @if($order->pickup_info || $order->pickup_time)
                         <div class="mt-2 text-xs text-gray-500">
