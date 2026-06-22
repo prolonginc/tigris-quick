@@ -28,13 +28,7 @@
                                     Description
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                    Price
-                                </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                     Quantity
-                                </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                    Subtotal
                                 </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                     Actions
@@ -52,13 +46,7 @@
                                         {{ $cart->product->description }}
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        ${{ number_format($cart->product->price, 2) }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                         {{ $cart->quantity }}
-                                    </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        ${{ number_format($cart->product->price * $cart->quantity, 2) }}
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                         <form action="{{ route('cart.destroy', $cart) }}" method="POST">
@@ -73,7 +61,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
                                         Your cart is empty.
                                     </td>
                                 </tr>
@@ -89,11 +77,7 @@
         @if($cartItems->count() > 0)
             <div class="mt-6 flex justify-end">
                 <div class="bg-white shadow px-6 py-4 rounded-lg">
-                    <p class="text-lg font-semibold text-gray-800">
-                        Total: $
-                        {{ number_format($cartItems->sum(fn($cart) => $cart->product->price * $cart->quantity), 2) }}
-                    </p>
-                    <button class="mt-3 inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+                    <button class="inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
                         Proceed to Checkout
                     </button>
                 </div>

@@ -43,8 +43,7 @@
                                     <div class="font-medium text-gray-900" x-text="product.name"></div>
                                     <div class="text-gray-500 text-xs" x-text="product.description"></div>
                                     <div class="text-sm text-gray-700 mt-1">
-                                        $<span x-text="parseFloat(product.price).toFixed(2)"></span>
-                                        <span x-show="product.in_stock" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock</span>
+                                        <span x-show="product.in_stock" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock</span>
                                         <span x-show="!product.in_stock" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">Out of Stock</span>
                                     </div>
                                 </div>
@@ -267,7 +266,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">${item.product.description}</p>
-                <p class="text-sm text-gray-900 font-bold item-price mt-1">$${(item.product.price * item.quantity).toFixed(2)}</p>
             `;
             cartItemsContainer.appendChild(el);
         });
@@ -330,7 +328,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const qtySpan = existingItem.querySelector('.item-qty');
             const qty = parseInt(qtySpan.textContent) + 1;
             qtySpan.textContent = qty;
-            existingItem.querySelector('.item-price').textContent = `$${(parseFloat(product.price) * qty).toFixed(2)}`;
         } else {
             const item = document.createElement('div');
             item.classList.add('border-b', 'pb-3');
@@ -351,7 +348,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">${product.description || ''}</p>
-                <p class="text-sm text-gray-900 font-bold item-price mt-1">$${parseFloat(product.price).toFixed(2)}</p>
             `;
             cartItemsContainer.appendChild(item);
         }
@@ -366,20 +362,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!btn) return;
         const itemEl = btn.closest('[data-product-id]');
         const qtySpan = itemEl.querySelector('.item-qty');
-        const priceEl = itemEl.querySelector('.item-price');
-        const basePrice = parseFloat(priceEl.textContent.replace('$', '')) / parseInt(qtySpan.textContent);
         let qty = parseInt(qtySpan.textContent);
 
         if (btn.classList.contains('increase-btn')) {
             qty++;
             qtySpan.textContent = qty;
-            priceEl.textContent = `$${(basePrice * qty).toFixed(2)}`;
         }
 
         if (btn.classList.contains('decrease-btn') && qty > 1) {
             qty--;
             qtySpan.textContent = qty;
-            priceEl.textContent = `$${(basePrice * qty).toFixed(2)}`;
         }
 
         if (btn.classList.contains('delete-item')) {

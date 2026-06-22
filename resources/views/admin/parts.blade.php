@@ -25,7 +25,6 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Product Number</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Available</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
                                 </tr>
@@ -37,23 +36,21 @@
                                         <div class="font-medium text-gray-900">{{ $product->name }}</div>
                                         <div class="text-gray-500 text-xs">{{ $product->description }}</div>
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{$product->price}}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        @if($product->quantity)
+                                        @if($product->quantity >= 5)
                                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">In Stock</span>
                                         @else
                                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">Out of Stock</span>
                                         @endif
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        @if($product->quantity > 0)
+                                        @if($product->quantity >= 5)
                                             <form action="{{ route('cart.store') }}" method="POST" class="add-to-cart-form">
                                                 @csrf
                                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                                 <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                                                 <input type="hidden" name="name" value="{{ $product->name }}">
                                                 <input type="hidden" name="description" value="{{ $product->description }}">
-                                                <input type="hidden" name="price" value="{{ $product->price }}">
                                                 <button type="submit"
                                                     class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
                                                     Add to Cart
@@ -220,7 +217,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">${item.product.description}</p>
-                <p class="text-sm text-gray-900 font-bold item-price mt-1">$${(item.product.price * item.quantity).toFixed(2)}</p>
             `;
             cartItemsContainer.appendChild(el);
         });
@@ -301,14 +297,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const productId = this.querySelector('[name="product_id"]').value;
             const name = this.querySelector('[name="name"]').value;
             const description = this.querySelector('[name="description"]').value;
-            const price = parseFloat(this.querySelector('[name="price"]').value);
 
             let existingItem = cartItemsContainer.querySelector(`[data-product-id="${productId}"]`);
             if (existingItem) {
                 const qtySpan = existingItem.querySelector('.item-qty');
                 const qty = parseInt(qtySpan.textContent) + 1;
                 qtySpan.textContent = qty;
-                existingItem.querySelector('.item-price').textContent = `$${(price * qty).toFixed(2)}`;
             } else {
                 const item = document.createElement('div');
                 item.classList.add('border-b', 'pb-3');
@@ -329,7 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         </div>
                     </div>
                     <p class="text-sm text-gray-500 mt-1">${description}</p>
-                    <p class="text-sm text-gray-900 font-bold item-price mt-1">$${price}</p>
                 `;
                 cartItemsContainer.appendChild(item);
             }
@@ -347,20 +340,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!btn) return;
         const itemEl = btn.closest('[data-product-id]');
         const qtySpan = itemEl.querySelector('.item-qty');
-        const priceEl = itemEl.querySelector('.item-price');
-        const basePrice = parseFloat(priceEl.textContent.replace('$', '')) / parseInt(qtySpan.textContent);
         let qty = parseInt(qtySpan.textContent);
 
         if (btn.classList.contains('increase-btn')) {
             qty++;
             qtySpan.textContent = qty;
-            priceEl.textContent = `$${(basePrice * qty).toFixed(2)}`;
         }
 
         if (btn.classList.contains('decrease-btn') && qty > 1) {
             qty--;
             qtySpan.textContent = qty;
-            priceEl.textContent = `$${(basePrice * qty).toFixed(2)}`;
         }
 
         if (btn.classList.contains('delete-item')) {

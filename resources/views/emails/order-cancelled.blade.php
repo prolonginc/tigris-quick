@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will-Call Order Received</title>
+    <title>Will-Call Order Cancelled</title>
     <style>
         body {
             font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
@@ -21,7 +21,7 @@
             border: 1px solid #e5e7eb;
         }
         .header {
-            background-color: #1d4ed8;
+            background-color: #b91c1c;
             color: #ffffff;
             padding: 1rem 1.5rem;
             font-weight: 600;
@@ -61,8 +61,19 @@
         </div>
 
         <div class="section">
-            <h1 class="title">Will-Call Order Received</h1>
-            <p class="subtitle">Hi {{ $customer->name ?? 'there' }}, thanks for placing your order with <strong>Tigris Auto Glass.</strong></p>
+            @if($audience === 'admin')
+                <h1 class="title">Will-Call Order Cancelled</h1>
+                <p class="subtitle">An order has been cancelled by the customer.</p>
+
+                <div class="box">
+                    <p class="label">Customer</p>
+                    <p>{{ $customer->name ?? 'Customer' }}</p>
+                    <p class="item-desc">{{ $customer->email ?? '' }}</p>
+                </div>
+            @else
+                <h1 class="title">Your Order Was Cancelled</h1>
+                <p class="subtitle">Hi {{ $customer->name ?? 'there' }}, your order <strong>{{ $order->order_number }}</strong> with <strong>Tigris Auto Glass</strong> has been cancelled.</p>
+            @endif
 
             <div class="box">
                 <p class="label">Order Details</p>
@@ -71,7 +82,7 @@
             </div>
 
             <div class="box">
-                <p class="label">Items Ordered</p>
+                <p class="label">Cancelled Items</p>
                 @foreach($order->items as $item)
                     <div class="item-row">
                         <div>
@@ -83,7 +94,13 @@
                 @endforeach
             </div>
 
-            <p class="footer">Thank you for choosing Tigris Auto Glass.</p>
+            <p class="footer">
+                @if($audience === 'admin')
+                    No pickup is required for this order.
+                @else
+                    If this was a mistake, please place a new order or contact us.
+                @endif
+            </p>
         </div>
     </div>
 </body>
