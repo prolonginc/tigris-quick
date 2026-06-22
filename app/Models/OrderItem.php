@@ -12,6 +12,7 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'quantity',
+        'returned_quantity',
         'price',
     ];
 
@@ -23,5 +24,13 @@ class OrderItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Quantity still eligible to be returned.
+     */
+    public function returnableQuantity(): int
+    {
+        return $this->quantity - $this->returned_quantity;
     }
 }

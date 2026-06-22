@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 
 use App\Http\Controllers\QuickbooksController;
 use Illuminate\Support\Facades\Route;
@@ -42,11 +43,13 @@ Route::get('/parts', [DashboardController::class,'index'])->middleware(['auth'])
 Route::get('/admin/parts', [DashboardController::class,'adminIndex'])->middleware(['auth'])->name('admin.parts');
 Route::get('/api/products/search', [DashboardController::class,'searchApi'])->middleware(['auth'])->name('products.search');
 
-Route::get('/purchase-history', function () {
-    $user = auth()->user();
-    $orders = $user->orders()->with('items.product')->latest()->get();
-    return view('purchase-history', compact('orders', 'user'));
-})->middleware(['auth'])->name('purchase-history');
+Route::get('/purchase-history', [OrderController::class, 'history'])
+    ->middleware(['auth'])->name('purchase-history');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/return', [OrderController::class, 'returnItems'])->name('orders.return');
+});
 
 Route::get('/contact', function () {
     return view('contact');

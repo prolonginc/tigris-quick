@@ -58,7 +58,7 @@
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                                         <div class="flex items-center gap-2">
                                             <span class="font-medium text-gray-900">{{ $product->name }}</span>
-                                            @if($product->quantity)
+                                            @if($product->quantity >= 5)
                                                 <span class="sm:hidden inline-block w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
                                             @else
                                                 <span class="sm:hidden inline-block w-2 h-2 rounded-full bg-pink-500 flex-shrink-0"></span>
@@ -69,7 +69,7 @@
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">{{ $product->sku ?? '—' }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $product->quantity }}</td>
                                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                        @if($product->quantity)
+                                        @if($product->quantity >= 5)
                                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">In Stock</span>
                                         @else
                                             <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">Out of Stock</span>
@@ -133,14 +133,14 @@ function adminSearch() {
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                             <div class="flex items-center gap-2">
                                 <span class="font-medium text-gray-900">${this.escapeHtml(p.name)}</span>
-                                <span class="sm:hidden inline-block w-2 h-2 rounded-full flex-shrink-0 ${p.quantity > 0 ? 'bg-green-500' : 'bg-pink-500'}"></span>
+                                <span class="sm:hidden inline-block w-2 h-2 rounded-full flex-shrink-0 ${p.quantity >= 5 ? 'bg-green-500' : 'bg-pink-500'}"></span>
                             </div>
                             <div class="text-gray-500 text-xs">${this.escapeHtml(p.description || '')}</div>
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-blue-600 font-semibold">${this.escapeHtml(p.sku || '—')}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${p.quantity}</td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                            ${p.quantity > 0
+                            ${p.quantity >= 5
                                 ? '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800">In Stock</span>'
                                 : '<span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-pink-100 text-pink-800">Out of Stock</span>'
                             }
