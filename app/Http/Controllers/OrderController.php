@@ -11,6 +11,8 @@ use App\Notifications\CustomerOrderCancelled;
 use App\Notifications\AdminOrderCancelled;
 use App\Notifications\CustomerOrderReturned;
 use App\Notifications\AdminOrderReturned;
+use App\Notifications\CustomerReturnCancelled;
+use App\Notifications\AdminReturnCancelled;
 
 class OrderController extends Controller
 {
@@ -130,6 +132,89 @@ class OrderController extends Controller
             ->notify(new AdminOrderReturned($order, $returnedItems));
 
         return back()->with('success', "Return processed for order {$order->order_number}.");
+    }
+
+    /**
+     * Reverse a previously processed return for some or all items.
+     */
+    public function undoReturn(Request $request, Order $order)
+    {
+        $this->authorizeOrder($order);
+
+        if ($order->isCancelled()) {
+            return back()->with('error', 'Cancelled orders cannot be modified.');
+        }
+
+        $validated = $request->validate([
+            'undo_all'              => 'sometimes|boolean',
+            'items'                 => 'required_without:undo_all|array',
+            'items.*.order_item_id' => 'required|integer',
+            'items.*.quantity'      => 'required|integer|min:1',
+        ]);
+
+        $order->load('items.product');
+        $undoAll = $request->boolean('undo_all');
+
+        // Build a map of how many returned units to restore per order item.
+        $toUndo = [];
+        if ($undoAll) {
+            foreach ($order->items as $item) {
+                if ($item->returned_quantity > 0) {
+                    $toUndo[$item->id] = $item->returned_quantity;
+                }
+            }
+        } else {
+            foreach ($validated['items'] as $line) {
+                $toUndo[$line['order_item_id']] = ($toUndo[$line['order_item_id']] ?? 0) + $line['quantity'];
+            }
+        }
+
+        if (empty($toUndo)) {
+            return back()->with('error', 'There are no returns to cancel.');
+        }
+
+        $restoredItems = DB::transaction(function () use ($order, $toUndo) {
+            $restored = [];
+            $charge = 0;
+
+            foreach ($order->items as $item) {
+                if (! isset($toUndo[$item->id])) {
+                    continue;
+                }
+
+                $qty = min($toUndo[$item->id], $item->returned_quantity);
+                if ($qty <= 0) {
+                    continue;
+                }
+
+                $item->decrement('returned_quantity', $qty);
+                $charge += $qty * (float) $item->price;
+
+                $restored[] = [
+                    'name' => $item->product->name ?? 'Item',
+                    'description' => $item->product->description ?? '',
+                    'quantity' => $qty,
+                ];
+            }
+
+            // Add the value of the restored items back to the order total.
+            $order->total_price = (float) $order->total_price + $charge;
+
+            $order->load('items');
+            $order->syncReturnStatus();
+
+            return $restored;
+        });
+
+        if (empty($restoredItems)) {
+            return back()->with('error', 'The selected returns have already been cancelled.');
+        }
+
+        $order->user->notify(new CustomerReturnCancelled($order, $restoredItems));
+        Notification::route('mail', config('app.order_notification_email'))
+            ->notify(new AdminReturnCancelled($order, $restoredItems));
+
+        return back()->with('success', "Return cancelled for order {$order->order_number}.");
     }
 
     /**

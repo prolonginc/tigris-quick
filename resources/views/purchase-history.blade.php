@@ -76,21 +76,41 @@
                                 </p>
                             </div>
 
-                            @if($canManage && ! $order->isCancelled() && $item->returnableQuantity() > 0)
-                                <form action="{{ route('orders.return', $order) }}" method="POST" class="flex items-center gap-2 js-confirm"
-                                      data-confirm-title="Return item?"
-                                      data-confirm-message="Return the selected quantity of this item? This can't be undone."
-                                      data-confirm-label="Return"
-                                      data-confirm-variant="warning">
-                                    @csrf
-                                    <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
-                                    <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returnableQuantity() }}" value="1"
-                                           class="w-16 rounded-md border-gray-300 text-sm">
-                                    <button type="submit"
-                                            class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200">
-                                        Return
-                                    </button>
-                                </form>
+                            @if($canManage && ! $order->isCancelled())
+                                <div class="flex flex-col items-end gap-2">
+                                    @if($item->returnableQuantity() > 0)
+                                        <form action="{{ route('orders.return', $order) }}" method="POST" class="flex items-center gap-2 js-confirm"
+                                              data-confirm-title="Return item?"
+                                              data-confirm-message="Return the selected quantity of this item? This can't be undone."
+                                              data-confirm-label="Return"
+                                              data-confirm-variant="warning">
+                                            @csrf
+                                            <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
+                                            <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returnableQuantity() }}" value="1"
+                                                   class="w-16 rounded-md border-gray-300 text-sm">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200">
+                                                Return
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($item->returned_quantity > 0)
+                                        <form action="{{ route('orders.return.undo', $order) }}" method="POST" class="flex items-center gap-2 js-confirm"
+                                              data-confirm-title="Cancel return?"
+                                              data-confirm-message="Cancel the return on the selected quantity of this item? It will be part of the order again."
+                                              data-confirm-label="Cancel Return"
+                                              data-confirm-variant="warning">
+                                            @csrf
+                                            <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
+                                            <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returned_quantity }}" value="1"
+                                                   class="w-16 rounded-md border-gray-300 text-sm">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                Undo Return
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     @endforeach
