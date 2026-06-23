@@ -17,11 +17,6 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Purchase History</h2>
         @endif
 
-        @if(session('success'))
-            <div class="mb-4 rounded-md bg-green-50 border border-green-200 p-4 text-sm text-green-800">
-                {{ session('success') }}
-            </div>
-        @endif
         @if(session('error'))
             <div class="mb-4 rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-800">
                 {{ session('error') }}
@@ -53,9 +48,11 @@
                             <p class="text-sm font-semibold text-gray-900">{{ $order->order_number }}</p>
                             <p class="text-xs text-gray-500">{{ $order->created_at->format('M j, Y \a\t g:i A') }}</p>
                         </div>
-                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {{ $statusStyles[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                            {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
-                        </span>
+                        @if($order->status !== \App\Models\Order::STATUS_PENDING)
+                            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium {{ $statusStyles[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
+                            </span>
+                        @endif
                     </div>
                     @if($order->pickup_info || $order->pickup_time)
                         <div class="mt-2 text-xs text-gray-500">
@@ -79,17 +76,41 @@
                                 </p>
                             </div>
 
-                            @if($canManage && ! $order->isCancelled() && $item->returnableQuantity() > 0)
-                                <form action="{{ route('orders.return', $order) }}" method="POST" class="flex items-center gap-2">
-                                    @csrf
-                                    <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
-                                    <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returnableQuantity() }}" value="1"
-                                           class="w-16 rounded-md border-gray-300 text-sm">
-                                    <button type="submit"
-                                            class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200">
-                                        Return
-                                    </button>
-                                </form>
+                            @if($canManage && ! $order->isCancelled())
+                                <div class="flex flex-col items-end gap-2">
+                                    @if($item->returnableQuantity() > 0)
+                                        <form action="{{ route('orders.return', $order) }}" method="POST" class="flex items-center gap-2 js-confirm"
+                                              data-confirm-title="Return item?"
+                                              data-confirm-message="Return the selected quantity of this item? This can't be undone."
+                                              data-confirm-label="Return"
+                                              data-confirm-variant="warning">
+                                            @csrf
+                                            <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
+                                            <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returnableQuantity() }}" value="1"
+                                                   class="w-16 rounded-md border-gray-300 text-sm">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-amber-100 text-amber-800 hover:bg-amber-200">
+                                                Return
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($item->returned_quantity > 0)
+                                        <form action="{{ route('orders.return.undo', $order) }}" method="POST" class="flex items-center gap-2 js-confirm"
+                                              data-confirm-title="Cancel return?"
+                                              data-confirm-message="Cancel the return on the selected quantity of this item? It will be part of the order again."
+                                              data-confirm-label="Cancel Return"
+                                              data-confirm-variant="warning">
+                                            @csrf
+                                            <input type="hidden" name="items[0][order_item_id]" value="{{ $item->id }}">
+                                            <input type="number" name="items[0][quantity]" min="1" max="{{ $item->returned_quantity }}" value="1"
+                                                   class="w-16 rounded-md border-gray-300 text-sm">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                Undo Return
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     @endforeach
@@ -97,8 +118,11 @@
 
                 @if($hasReturnable)
                     <div class="px-4 py-3 sm:px-6 bg-gray-50 flex flex-wrap items-center justify-end gap-3 border-t border-gray-200">
-                        <form action="{{ route('orders.return', $order) }}" method="POST"
-                              onsubmit="return confirm('Return all remaining items in this order?');">
+                        <form action="{{ route('orders.return', $order) }}" method="POST" class="js-confirm"
+                              data-confirm-title="Return all items?"
+                              data-confirm-message="Return all remaining items in order {{ $order->order_number }}? This can't be undone."
+                              data-confirm-label="Return All"
+                              data-confirm-variant="warning">
                             @csrf
                             <input type="hidden" name="return_all" value="1">
                             <button type="submit"
@@ -106,8 +130,11 @@
                                 Return All Items
                             </button>
                         </form>
-                        <form action="{{ route('orders.cancel', $order) }}" method="POST"
-                              onsubmit="return confirm('Cancel this entire order?');">
+                        <form action="{{ route('orders.cancel', $order) }}" method="POST" class="js-confirm"
+                              data-confirm-title="Cancel order?"
+                              data-confirm-message="Cancel order {{ $order->order_number }} entirely? This can't be undone."
+                              data-confirm-label="Cancel Order"
+                              data-confirm-variant="danger">
                             @csrf
                             <button type="submit"
                                     class="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700">
@@ -127,4 +154,107 @@
             </div>
         @endforelse
     </div>
+
+    {{-- Confirmation modal --}}
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center relative">
+            <h2 id="confirm-title" class="text-lg font-semibold text-gray-900 mb-2"></h2>
+            <p id="confirm-message" class="text-sm text-gray-600 mb-6"></p>
+            <div class="flex justify-center gap-3">
+                <button type="button" id="confirm-cancel"
+                        class="px-4 py-2 rounded-md text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    Keep
+                </button>
+                <button type="button" id="confirm-ok"
+                        class="px-4 py-2 rounded-md text-sm font-medium text-white">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Success modal --}}
+    <div id="ph-success-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50 p-4">
+        <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center relative">
+            <button type="button" id="ph-success-close"
+                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <div class="flex justify-center mb-4">
+                <div class="h-14 w-14 flex items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800 mb-1">All set</h2>
+            <p class="text-gray-600 text-sm mb-6" id="ph-success-message"></p>
+            <button type="button" id="ph-success-ok"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition">
+                Done
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const confirmModal = document.getElementById('confirm-modal');
+            const confirmTitle = document.getElementById('confirm-title');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmOk = document.getElementById('confirm-ok');
+            const confirmCancel = document.getElementById('confirm-cancel');
+            let pendingForm = null;
+
+            const variantClasses = {
+                danger: ['bg-red-600', 'hover:bg-red-700'],
+                warning: ['bg-amber-600', 'hover:bg-amber-700'],
+            };
+
+            function openConfirm(form) {
+                pendingForm = form;
+                confirmTitle.textContent = form.dataset.confirmTitle || 'Are you sure?';
+                confirmMessage.textContent = form.dataset.confirmMessage || '';
+                confirmOk.textContent = form.dataset.confirmLabel || 'Confirm';
+                confirmOk.className = 'px-4 py-2 rounded-md text-sm font-medium text-white';
+                (variantClasses[form.dataset.confirmVariant] || variantClasses.warning)
+                    .forEach(c => confirmOk.classList.add(c));
+                confirmModal.classList.remove('hidden');
+                confirmModal.classList.add('flex');
+            }
+
+            function closeConfirm() {
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+                pendingForm = null;
+            }
+
+            document.querySelectorAll('form.js-confirm').forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    openConfirm(form);
+                });
+            });
+
+            confirmOk.addEventListener('click', () => {
+                if (pendingForm) pendingForm.submit();
+            });
+            confirmCancel.addEventListener('click', closeConfirm);
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) closeConfirm();
+            });
+
+            @if(session('success'))
+                const successModal = document.getElementById('ph-success-modal');
+                document.getElementById('ph-success-message').textContent = @json(session('success'));
+                const closeSuccess = () => {
+                    successModal.classList.add('hidden');
+                    successModal.classList.remove('flex');
+                };
+                successModal.classList.remove('hidden');
+                successModal.classList.add('flex');
+                document.getElementById('ph-success-ok').addEventListener('click', closeSuccess);
+                document.getElementById('ph-success-close').addEventListener('click', closeSuccess);
+                successModal.addEventListener('click', (e) => {
+                    if (e.target === successModal) closeSuccess();
+                });
+            @endif
+        });
+    </script>
 </x-app-layout>

@@ -8,14 +8,14 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\Order;
 
-class AdminOrderReturned extends Notification implements ShouldQueue
+class AdminReturnCancelled extends Notification implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * @param array $returnedItems list of ['name', 'description', 'quantity']
+     * @param array $restoredItems list of ['name', 'description', 'quantity']
      */
-    public function __construct(public Order $order, public array $returnedItems)
+    public function __construct(public Order $order, public array $restoredItems)
     {
         //
     }
@@ -28,11 +28,11 @@ class AdminOrderReturned extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Order Return — ' . $this->order->order_number)
-            ->view('emails.order-returned', [
+            ->subject('Order Return Cancelled — ' . $this->order->order_number)
+            ->view('emails.order-return-cancelled', [
                 'order' => $this->order,
                 'customer' => $this->order->user,
-                'returnedItems' => $this->returnedItems,
+                'restoredItems' => $this->restoredItems,
                 'audience' => 'admin',
             ]);
     }

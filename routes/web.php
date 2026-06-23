@@ -49,6 +49,7 @@ Route::get('/purchase-history', [OrderController::class, 'history'])
 Route::middleware(['auth'])->group(function () {
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::post('/orders/{order}/return', [OrderController::class, 'returnItems'])->name('orders.return');
+    Route::post('/orders/{order}/return/undo', [OrderController::class, 'undoReturn'])->name('orders.return.undo');
 });
 
 Route::get('/contact', function () {
