@@ -48,7 +48,7 @@ class DashboardController extends Controller
                 'price' => $product->price,
                 'quantity' => $product->quantity,
                 'sku' => $product->sku,
-                'in_stock' => $product->quantity >= 5,
+                'in_stock' => $product->quantity >= 4,
             ];
         }));
     }
