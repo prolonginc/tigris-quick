@@ -132,6 +132,31 @@ return [
     'meilisearch' => [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY', null),
+
+        'index-settings' => [
+            \App\Models\Product::class => [
+                /*
+                 * Only these fields are matched against, in this priority order.
+                 * Scout stores the model id as the Meilisearch document primary
+                 * key, so it stays in the document and MUST be excluded here —
+                 * otherwise a numeric query like "3088" matches an unrelated
+                 * product whose internal row id is 3088.
+                 */
+                'searchableAttributes' => [
+                    'name',
+                    'sku',
+                    'description',
+                ],
+
+                /*
+                 * Part numbers are exact identifiers: a "close" match is the
+                 * wrong glass. Never fuzzy-match them.
+                 */
+                'typoTolerance' => [
+                    'disableOnAttributes' => ['name', 'sku'],
+                ],
+            ],
+        ],
     ],
 
 ];
