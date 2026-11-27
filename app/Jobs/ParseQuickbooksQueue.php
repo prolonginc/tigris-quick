@@ -3,34 +3,25 @@
 namespace App\Jobs;
 
 use App\Models\Product;
+use App\QuickBooks\ProductSync;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class ParseQuickbooksQueue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $id;
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
+
     public function __construct($id)
     {
         $this->id = $id;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
         Auth::loginUsingId(1);
@@ -38,31 +29,21 @@ class ParseQuickbooksQueue implements ShouldQueue
         try {
             $quickbooks = app(\App\QuickBooks\Client::class);
             $item = $quickbooks->getDataService()->FindbyId('item', $this->id);
-            if($item && $item->QtyOnHand != null) {
-                if(Str::contains($item->Name, 'deleted')) {
-                    $product = Product::find($this->id);
-                    if($product) {
-                        $product->delete();
-                    }
-                } else {
-                    Product::updateOrCreate(
-                        ['id' =>$this->id],
-                        [
-                            'name' => $item->Name,
-                            'sku' => $item->Sku ?? null,
-                            'description' => $item->Description,
-                            'quantity' => $item->QtyOnHand,
-                            'price' => $item->UnitPrice,
-                        ]
-                    );
 
+            if (! $item) {
+                return;
+            }
+
+            if (! ProductSync::isActive($item)) {
+                // Deleted / made inactive in QuickBooks: take it off the portal.
+                if ($product = Product::find($this->id)) {
+                    ProductSync::deactivate($product);
                 }
+            } elseif ($item->QtyOnHand !== null) {
+                ProductSync::upsert($item);
             }
         } catch (\Throwable $e) {
             \Log::warning("ParseQuickbooksQueue failed for item {$this->id}: {$e->getMessage()}");
         }
-
-
-
     }
 }
