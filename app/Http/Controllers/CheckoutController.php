@@ -20,7 +20,7 @@ class CheckoutController extends Controller
             'pickup_info'  => 'required|string',
             'pickup_time'  => 'required|string',
             'items'        => 'required|array',
-            'items.*.product_id' => 'required|integer|exists:products,id',
+            'items.*.product_id' => 'required|integer|exists:products,id,deleted_at,NULL',
             'items.*.quantity'   => 'required|integer|min:1',
         ]);
 

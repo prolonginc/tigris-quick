@@ -35,6 +35,7 @@ class CartController extends Controller
     public function index()
     {
         $cartItems = Cart::with('product')
+            ->whereHas('product') // skip parts removed from QuickBooks
             ->where('user_id',  auth()->id())
             ->get();
 
@@ -50,7 +51,7 @@ class CartController extends Controller
     {
         $validated = $request->validate([
             'items' => 'present|array',
-            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.product_id' => 'required|exists:products,id,deleted_at,NULL',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
